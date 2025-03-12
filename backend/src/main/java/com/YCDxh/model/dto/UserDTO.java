@@ -28,8 +28,10 @@ public class UserDTO {
         private String email;
     }
 
-    @Getter @Setter
-    @NoArgsConstructor @AllArgsConstructor
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class LoginRequest {
         @NotBlank
         private String username;
@@ -52,5 +54,6 @@ public class UserDTO {
 
         // 可选：展示关联信息
         private Integer courseCount;  // 用户创建的课程数量（如果是教师）
+
     }
 }

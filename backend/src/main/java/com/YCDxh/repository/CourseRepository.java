@@ -12,4 +12,7 @@ import java.util.List;
 public interface CourseRepository extends JpaRepository<Course, Long> {
     @Query("SELECT c FROM Course c JOIN FETCH c.teacher WHERE c.category = :category")
     List<Course> findByCategoryWithTeacher(@Param("category") String category);
+
+
+    boolean existsByTitle(String title);
 }
