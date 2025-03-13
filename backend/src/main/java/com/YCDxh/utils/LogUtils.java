@@ -25,14 +25,14 @@ public class LogUtils {
         // 记录日志（无论成功或失败）
         log.info("登录日志: " +
                         "traceId = {}, " +
-                        "用户编号 = {}, " +
+                        "用户Id = {}, " +
                         "用户名 = {}, " +
                         "客户端计算机名称 = {}, " +
                         "客户端IP = {}, " +
                         "客户端MAC地址 = {}, " +
                         "是否成功 = {}",
                 traceId,
-                user != null ? user.getUserId() : "",
+                user != null ? user.getUserId() : " ",
                 user != null ? user.getUsername() : loginRequest.getUsername(),
                 clientComputerName,
                 ip,

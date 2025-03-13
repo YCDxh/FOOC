@@ -25,4 +25,10 @@ public class CourseController {
         return courseService.createCourse(request);
     }
 
+    @ApiOperation(value = "根据课程ID获取课程信息")
+    @PostMapping("/getCourseById")
+    public CourseDTO.CourseResponse getCourseById(Long courseId) {
+        return courseService.getCourseById(courseId);
+    }
+
 }

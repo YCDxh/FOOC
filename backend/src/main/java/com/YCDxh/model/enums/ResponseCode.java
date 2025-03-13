@@ -57,7 +57,8 @@ public enum ResponseCode {
     INVALID_REPLY(2018, "回复错误"),
     INVALID_CATEGORY(2019, "分类错误"),
     INVALID_CATEGORY_NAME(2020, "分类名错误"),
-    INVALID_CATEGORY_ID(2021, "分类id错误");
+    INVALID_CATEGORY_ID(2021, "分类id错误"),
+    COURSE_NOT_EXIST(2020, "课程不存在");
 
 
     private final int code;

@@ -19,7 +19,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(UserException.class)
     public ResponseEntity<ApiResponse> handleUserException(UserException e) {
-        log.error("UserException occurred", e.getMessage());
+        log.error("UserException occurred: {}", e.getMessage());
         return ResponseEntity.status(e.getCode())
                 .body(new ApiResponse<>(e.getCode(), e.getMessage(), null));
     }
@@ -34,7 +34,7 @@ public class GlobalExceptionHandler {
                 .map(error -> error.getDefaultMessage())
                 .findFirst()
                 .orElse("参数校验失败");
-//        log.error("Validation failed: {}", errorMessage);
+        log.error("Validation failed: {}", errorMessage);
         return ResponseEntity.status(ResponseCode.PARAM_ERROR.getCode())
                 .body(new ApiResponse<>(ResponseCode.PARAM_ERROR.getCode(), errorMessage, null));
     }
@@ -42,9 +42,10 @@ public class GlobalExceptionHandler {
     // 处理未捕获的运行时异常（如 NullPointerException）
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse> handleException(Exception e) {
-//        log.error("Unexpected exception occurred", e);
+        log.error("Unexpected exception occurred: {}", e.getMessage());
         return ResponseEntity.status(ResponseCode.INTERNAL_SERVER_ERROR.getCode())
-                .body(new ApiResponse<>(ResponseCode.INTERNAL_SERVER_ERROR.getCode(), "系统内部错误", null));
+                .body(new ApiResponse<>(ResponseCode.INTERNAL_SERVER_ERROR.getCode(),
+                        ResponseCode.INTERNAL_SERVER_ERROR.getMessage(), null));
     }
 }
 

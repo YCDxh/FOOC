@@ -3,6 +3,7 @@ package com.YCDxh.model;
 import com.YCDxh.model.enums.ResponseCode;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
@@ -13,7 +14,9 @@ import java.util.StringJoiner;
 @AllArgsConstructor
 public class ApiResponse<T> implements Serializable {
     private int code;
+    @Getter
     private String message;
+    @Getter
     private T data;
 
 //    public static <T> ApiResponse<T> success(T data) {
@@ -23,6 +26,11 @@ public class ApiResponse<T> implements Serializable {
     public ApiResponse(Integer code, String message) {
         this.code = code;
         this.message = message;
+    }
+
+    public ApiResponse(ResponseCode code) {
+        this.code = code.getCode();
+        this.message = code.getMessage();
     }
 
     public ApiResponse(Integer code, String message, T data) {
@@ -64,14 +72,6 @@ public class ApiResponse<T> implements Serializable {
 
     public Integer getCode() {
         return this.code;
-    }
-
-    public String getMessage() {
-        return this.message;
-    }
-
-    public T getData() {
-        return this.data;
     }
 
     @Override

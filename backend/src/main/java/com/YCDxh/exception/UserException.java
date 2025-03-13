@@ -19,11 +19,13 @@ public class UserException extends RuntimeException {
     public UserException(ResponseCode code) {
         super(code.getMessage());
         this.code = code.getCode();
+        this.message = code.getMessage();
     }
 
     public UserException(int code, String message) {
         super(message);
         this.code = code;
+        this.message = message;
     }
 
 

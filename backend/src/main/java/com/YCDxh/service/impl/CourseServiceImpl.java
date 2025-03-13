@@ -1,8 +1,10 @@
 package com.YCDxh.service.impl;
 
+import com.YCDxh.exception.UserException;
 import com.YCDxh.mapper.CourseMapper;
 import com.YCDxh.model.dto.CourseDTO;
 import com.YCDxh.model.entity.Course;
+import com.YCDxh.model.enums.ResponseCode;
 import com.YCDxh.repository.CourseRepository;
 import com.YCDxh.service.CourseService;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +17,9 @@ import javax.validation.ConstraintViolationException;
 import javax.validation.Validator;
 import java.util.Set;
 
+/**
+ * @author YCDxhg
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -53,6 +58,11 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public CourseDTO.CourseResponse getCourseById(Long courseId) {
-        return null;
+        if (courseId == null) {
+            throw new UserException(ResponseCode.PARAM_ERROR);
+        }
+        return courseMapper.toCourseResponse
+                (courseRepository.findById(courseId).orElseThrow(() ->
+                        new UserException(ResponseCode.COURSE_NOT_EXIST)));
     }
 }
