@@ -13,12 +13,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+/**
+ * @author YCDxhg
+ */
 public class JwtUtils {
     // 密钥配置（关键修改部分）
-    private static final String SECRET_KEY_STRING = "your-secret-key"; // 原密钥字符串（需替换为实际密钥）
-    private static final Key SECRET_KEY = Keys.hmacShaKeyFor(
-            Base64.getDecoder().decode(SECRET_KEY_STRING)
-    );
+    private static final SignatureAlgorithm SIGNATURE_ALGORITHM = SignatureAlgorithm.HS512; // 推荐使用HS512（384位）或HS256（256位）
+    private static final Key SECRET_KEY = Keys.secretKeyFor(SIGNATURE_ALGORITHM); // 自动生成足够安全长度的密钥
+
     public static final long EXPIRATION_TIME = 1000 * 60 * 60 * 12; // 12小时（根据需求调整）
 
     // 获取用户名

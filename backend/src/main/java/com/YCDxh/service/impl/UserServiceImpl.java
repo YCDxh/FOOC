@@ -8,6 +8,7 @@ import com.YCDxh.model.entity.User;
 import com.YCDxh.model.enums.ResponseCode;
 import com.YCDxh.repository.UserRepository;
 import com.YCDxh.service.UserService;
+import com.YCDxh.utils.LogUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -19,6 +20,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 
+/**
+ * @author YCDxhg
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -56,7 +60,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public ApiResponse<UserDTO.UserResponse> register(UserDTO.RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new UserException(ResponseCode.EMAIL_OCCUPIED.getCode(), ResponseCode.EMAIL_OCCUPIED.getMessage());
+            throw new UserException(ResponseCode.EMAIL_OCCUPIED);
         }
         User user = new User();
         user.setUsername(request.getUsername());
@@ -80,13 +84,19 @@ public class UserServiceImpl implements UserService {
     // UserServiceImpl.java（修改后）
     @Override
     public User login(UserDTO.LoginRequest request) {
-        User user = userRepository.findByUsername(request.getUsername())
-                .orElseThrow(() -> new UserException(ResponseCode.USER_NOT_EXIST));
-
-        if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
-            throw new UserException(ResponseCode.INVALID_CREDENTIALS);
+        // 1. 检查用户是否存在
+        User user = userRepository.findByUsername(request.getUsername()).orElse(null);
+        if (user == null) {
+            return null;
         }
-        return user; // 返回验证通过的用户对象
-    }
 
+        // 2. 检查密码是否正确
+        if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
+            return null;
+        }
+
+        // 3. 登录成功，返回用户对象
+        return user;
+    }
 }
+

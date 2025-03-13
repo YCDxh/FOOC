@@ -2,6 +2,10 @@ package com.YCDxh.model.enums;
 
 import lombok.Getter;
 
+/**
+ * @author YCDxhg
+ */
+
 @Getter
 public enum ResponseCode {
 

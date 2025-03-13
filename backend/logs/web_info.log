@@ -1,0 +1,50 @@
+2025-03-13 15:17:13.398 [http-nio-8080-exec-4] INFO  com.YCDxh.service.impl.UserServiceImpl - UserServiceImpl.login()
+2025-03-13 15:17:13.398 [http-nio-8080-exec-4] INFO  com.YCDxh.service.impl.UserServiceImpl - UserServiceImpl.login()
+2025-03-13 15:17:13.473 [http-nio-8080-exec-4] INFO  com.YCDxh.utils.LogUtils - 登录日志: traceId=826b7f2f-d6a0-41e8-bf73-b8a1aac45aa2, 用户编号=4, 用户名=123, 客户端计算机名称=0:0:0:0:0:0:0:1, 客户端IP=0:0:0:0:0:0:0:1, 客户端MAC地址=无法获取, 时间=Thu Mar 13 15:17:13 CST 2025, 是否成功=true
+2025-03-13 15:17:13.473 [http-nio-8080-exec-4] INFO  com.YCDxh.utils.LogUtils - 登录日志: traceId=826b7f2f-d6a0-41e8-bf73-b8a1aac45aa2, 用户编号=4, 用户名=123, 客户端计算机名称=0:0:0:0:0:0:0:1, 客户端IP=0:0:0:0:0:0:0:1, 客户端MAC地址=无法获取, 时间=Thu Mar 13 15:17:13 CST 2025, 是否成功=true
+2025-03-13 15:17:15.763 [http-nio-8080-exec-5] INFO  com.YCDxh.service.impl.UserServiceImpl - UserServiceImpl.login()
+2025-03-13 15:17:15.763 [http-nio-8080-exec-5] INFO  com.YCDxh.service.impl.UserServiceImpl - UserServiceImpl.login()
+2025-03-13 15:17:15.839 [http-nio-8080-exec-5] INFO  com.YCDxh.utils.LogUtils - 登录日志: traceId=0d49caae-baf1-462c-bf51-4255e68240a0, 用户编号=4, 用户名=123, 客户端计算机名称=0:0:0:0:0:0:0:1, 客户端IP=0:0:0:0:0:0:0:1, 客户端MAC地址=无法获取, 时间=Thu Mar 13 15:17:15 CST 2025, 是否成功=true
+2025-03-13 15:17:15.839 [http-nio-8080-exec-5] INFO  com.YCDxh.utils.LogUtils - 登录日志: traceId=0d49caae-baf1-462c-bf51-4255e68240a0, 用户编号=4, 用户名=123, 客户端计算机名称=0:0:0:0:0:0:0:1, 客户端IP=0:0:0:0:0:0:0:1, 客户端MAC地址=无法获取, 时间=Thu Mar 13 15:17:15 CST 2025, 是否成功=true
+2025-03-13 15:20:06.454 INFO  - Starting BackendApplication using Java 1.8.0_442 on DESKTOP-LRJMOUO with PID 180 (C:\Users\YCDxhg\Desktop\Graduation_project\backend\target\classes started by YCDxhg in C:\Users\YCDxhg\Desktop\Graduation_project\backend)
+2025-03-13 15:20:06.454 INFO  - Starting BackendApplication using Java 1.8.0_442 on DESKTOP-LRJMOUO with PID 180 (C:\Users\YCDxhg\Desktop\Graduation_project\backend\target\classes started by YCDxhg in C:\Users\YCDxhg\Desktop\Graduation_project\backend)
+2025-03-13 15:20:06.456 INFO  - No active profile set, falling back to 1 default profile: "default"
+2025-03-13 15:20:06.456 INFO  - No active profile set, falling back to 1 default profile: "default"
+2025-03-13 15:20:10.895 INFO  - Started BackendApplication in 4.855 seconds (JVM running for 5.72)
+2025-03-13 15:20:10.895 INFO  - Started BackendApplication in 4.855 seconds (JVM running for 5.72)
+2025-03-13 15:20:14.437 INFO  - UserServiceImpl.login()
+2025-03-13 15:20:14.437 INFO  - UserServiceImpl.login()
+2025-03-13 15:20:39.632 INFO  - UserServiceImpl.login()
+2025-03-13 15:20:39.632 INFO  - UserServiceImpl.login()
+2025-03-13 15:20:42.896 INFO  - UserServiceImpl.login()
+2025-03-13 15:20:42.896 INFO  - UserServiceImpl.login()
+2025-03-13 15:23:21.710 INFO  - UserServiceImpl.login()
+2025-03-13 15:23:21.710 INFO  - UserServiceImpl.login()
+2025-03-13 15:23:22.700 INFO  - UserServiceImpl.login()
+2025-03-13 15:23:22.700 INFO  - UserServiceImpl.login()
+2025-03-13 15:23:23.022 INFO  - UserServiceImpl.login()
+2025-03-13 15:23:23.022 INFO  - UserServiceImpl.login()
+2025-03-13 15:23:23.246 INFO  - UserServiceImpl.login()
+2025-03-13 15:23:23.246 INFO  - UserServiceImpl.login()
+2025-03-13 15:40:35.053 INFO  - Starting BackendApplication using Java 1.8.0_442 on DESKTOP-LRJMOUO with PID 13632 (C:\Users\YCDxhg\Desktop\Graduation_project\backend\target\classes started by YCDxhg in C:\Users\YCDxhg\Desktop\Graduation_project\backend)
+2025-03-13 15:40:35.053 INFO  - Starting BackendApplication using Java 1.8.0_442 on DESKTOP-LRJMOUO with PID 13632 (C:\Users\YCDxhg\Desktop\Graduation_project\backend\target\classes started by YCDxhg in C:\Users\YCDxhg\Desktop\Graduation_project\backend)
+2025-03-13 15:40:35.056 INFO  - No active profile set, falling back to 1 default profile: "default"
+2025-03-13 15:40:35.056 INFO  - No active profile set, falling back to 1 default profile: "default"
+2025-03-13 15:40:39.555 INFO  - Started BackendApplication in 4.93 seconds (JVM running for 5.793)
+2025-03-13 15:40:39.555 INFO  - Started BackendApplication in 4.93 seconds (JVM running for 5.793)
+2025-03-13 15:40:44.894 INFO  - 登录日志: traceId=4828cbc0-abd7-4e98-99f1-697f0236af42, 用户编号=4, 用户名=123, 客户端计算机名称=0:0:0:0:0:0:0:1, 客户端IP=0:0:0:0:0:0:0:1, 客户端MAC地址=无法获取, 是否成功=true
+2025-03-13 15:40:44.894 INFO  - 登录日志: traceId=4828cbc0-abd7-4e98-99f1-697f0236af42, 用户编号=4, 用户名=123, 客户端计算机名称=0:0:0:0:0:0:0:1, 客户端IP=0:0:0:0:0:0:0:1, 客户端MAC地址=无法获取, 是否成功=true
+2025-03-13 15:40:50.685 INFO  - 登录日志: traceId=fff7d70d-d5fd-427d-8df3-dc9c92b71886, 用户编号=, 用户名=12, 客户端计算机名称=0:0:0:0:0:0:0:1, 客户端IP=0:0:0:0:0:0:0:1, 客户端MAC地址=无法获取, 是否成功=false
+2025-03-13 15:40:50.685 INFO  - 登录日志: traceId=fff7d70d-d5fd-427d-8df3-dc9c92b71886, 用户编号=, 用户名=12, 客户端计算机名称=0:0:0:0:0:0:0:1, 客户端IP=0:0:0:0:0:0:0:1, 客户端MAC地址=无法获取, 是否成功=false
+2025-03-13 15:40:56.379 INFO  - 登录日志: traceId=704b0737-45f6-4d51-9ec0-fdecfe168a3e, 用户编号=, 用户名=1, 客户端计算机名称=0:0:0:0:0:0:0:1, 客户端IP=0:0:0:0:0:0:0:1, 客户端MAC地址=无法获取, 是否成功=false
+2025-03-13 15:40:56.379 INFO  - 登录日志: traceId=704b0737-45f6-4d51-9ec0-fdecfe168a3e, 用户编号=, 用户名=1, 客户端计算机名称=0:0:0:0:0:0:0:1, 客户端IP=0:0:0:0:0:0:0:1, 客户端MAC地址=无法获取, 是否成功=false
+2025-03-13 15:42:44.339 INFO  - 登录日志: traceId=c38d1148-41c0-4e10-b328-e38f1e5b7c51, 用户编号=, 用户名=1, 客户端计算机名称=0:0:0:0:0:0:0:1, 客户端IP=0:0:0:0:0:0:0:1, 客户端MAC地址=无法获取, 是否成功=false
+2025-03-13 15:42:44.339 INFO  - 登录日志: traceId=c38d1148-41c0-4e10-b328-e38f1e5b7c51, 用户编号=, 用户名=1, 客户端计算机名称=0:0:0:0:0:0:0:1, 客户端IP=0:0:0:0:0:0:0:1, 客户端MAC地址=无法获取, 是否成功=false
+2025-03-13 16:00:41.456 INFO  - Starting BackendApplication using Java 1.8.0_442 on DESKTOP-LRJMOUO with PID 3676 (C:\Users\YCDxhg\Desktop\Graduation_project\backend\target\classes started by YCDxhg in C:\Users\YCDxhg\Desktop\Graduation_project\backend)
+2025-03-13 16:00:41.456 INFO  - Starting BackendApplication using Java 1.8.0_442 on DESKTOP-LRJMOUO with PID 3676 (C:\Users\YCDxhg\Desktop\Graduation_project\backend\target\classes started by YCDxhg in C:\Users\YCDxhg\Desktop\Graduation_project\backend)
+2025-03-13 16:00:41.459 INFO  - No active profile set, falling back to 1 default profile: "default"
+2025-03-13 16:00:41.459 INFO  - No active profile set, falling back to 1 default profile: "default"
+2025-03-13 16:00:46.697 INFO  - Started BackendApplication in 5.774 seconds (JVM running for 6.919)
+2025-03-13 16:00:46.697 INFO  - Started BackendApplication in 5.774 seconds (JVM running for 6.919)
+2025-03-13 16:01:19.398 INFO  - 登录日志: traceId=03c7f479-4382-4485-a946-a372eb8d8f13, 用户编号=4, 用户名=123, 客户端计算机名称=0:0:0:0:0:0:0:1, 客户端IP=0:0:0:0:0:0:0:1, 客户端MAC地址=无法获取, 是否成功=true
+2025-03-13 16:01:19.398 INFO  - 登录日志: traceId=03c7f479-4382-4485-a946-a372eb8d8f13, 用户编号=4, 用户名=123, 客户端计算机名称=0:0:0:0:0:0:0:1, 客户端IP=0:0:0:0:0:0:0:1, 客户端MAC地址=无法获取, 是否成功=true

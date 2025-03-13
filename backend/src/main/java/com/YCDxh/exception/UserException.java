@@ -3,10 +3,9 @@ package com.YCDxh.exception;
 import com.YCDxh.model.enums.ResponseCode;
 import lombok.Getter;
 
+@Getter
 public class UserException extends RuntimeException {
-    @Getter
     protected int code;
-    @Getter
     protected String message;
 
 
