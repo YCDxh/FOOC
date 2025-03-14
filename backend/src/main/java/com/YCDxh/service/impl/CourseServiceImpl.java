@@ -2,6 +2,7 @@ package com.YCDxh.service.impl;
 
 import com.YCDxh.exception.UserException;
 import com.YCDxh.mapper.CourseMapper;
+import com.YCDxh.model.ApiResponse;
 import com.YCDxh.model.dto.CourseDTO;
 import com.YCDxh.model.entity.Course;
 import com.YCDxh.model.enums.ResponseCode;
@@ -25,14 +26,14 @@ import java.util.Set;
 @Slf4j
 public class CourseServiceImpl implements CourseService {
 
-    private CourseRepository courseRepository;
+    private final CourseRepository courseRepository;
 
     private final CourseMapper courseMapper;
     private Validator validator;
 
 
     @Override
-    public CourseDTO.CourseResponse createCourse(CourseDTO.CreateRequest request) {
+    public ApiResponse<CourseDTO.CourseResponse> createCourse(CourseDTO.CreateRequest request) {
         // 1. 校验DTO对象
         Set<ConstraintViolation<CourseDTO.CreateRequest>> violations = validator.validate(request);
         if (!violations.isEmpty()) {
@@ -52,17 +53,20 @@ public class CourseServiceImpl implements CourseService {
         course.setCoverUrl(request.getCoverUrl());
         Course savedCourse = courseRepository.save(course);
 
-        return courseMapper.toCourseResponse(savedCourse);
+        return ApiResponse.success(courseMapper.toCourseResponse(savedCourse));
     }
 
 
     @Override
-    public CourseDTO.CourseResponse getCourseById(Long courseId) {
+    public ApiResponse<CourseDTO.CourseResponse> getCourseById(Long courseId) {
         if (courseId == null) {
             throw new UserException(ResponseCode.PARAM_ERROR);
         }
-        return courseMapper.toCourseResponse
-                (courseRepository.findById(courseId).orElseThrow(() ->
-                        new UserException(ResponseCode.COURSE_NOT_EXIST)));
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new UserException(ResponseCode.COURSE_NOT_EXIST));
+        if (course == null) {
+            throw new UserException(ResponseCode.COURSE_NOT_EXIST);
+        }
+        return ApiResponse.success(courseMapper.toCourseResponse(course));
     }
 }

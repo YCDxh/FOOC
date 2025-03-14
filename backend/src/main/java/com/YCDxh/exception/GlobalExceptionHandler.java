@@ -42,7 +42,7 @@ public class GlobalExceptionHandler {
     // 处理未捕获的运行时异常（如 NullPointerException）
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse> handleException(Exception e) {
-        log.error("Unexpected exception occurred: {}", e.getMessage());
+        log.error("Unexpected exception occurred: {}", e);
         return ResponseEntity.status(ResponseCode.INTERNAL_SERVER_ERROR.getCode())
                 .body(new ApiResponse<>(ResponseCode.INTERNAL_SERVER_ERROR.getCode(),
                         ResponseCode.INTERNAL_SERVER_ERROR.getMessage(), null));
