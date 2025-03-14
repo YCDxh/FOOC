@@ -1,11 +1,14 @@
 package com.YCDxh.utils;
 
+import com.YCDxh.security.MyUserDetails;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
@@ -16,10 +19,12 @@ import java.util.function.Function;
 /**
  * @author YCDxhg
  */
+
 public class JwtUtils {
-    // 密钥配置（关键修改部分）
-    private static final SignatureAlgorithm SIGNATURE_ALGORITHM = SignatureAlgorithm.HS512; // 推荐使用HS512（384位）或HS256（256位）
-    private static final Key SECRET_KEY = Keys.secretKeyFor(SIGNATURE_ALGORITHM); // 自动生成足够安全长度的密钥
+
+
+    private static String secretKeyString = "gUM+BALaPCW3O1VDxasOL26CNITirSV11zoWFeqT1mqfp9VuX3tFX2J60nGZDslIdKHfNUHPMJuR+PJZ+B3M2w=="; // 从配置文件读取 Base64 编码的秘钥
+    private static Key secretKey = new SecretKeySpec(Base64.getDecoder().decode(secretKeyString), "HmacSHA512");
 
     public static final long EXPIRATION_TIME = 1000 * 60 * 60 * 12; // 12小时（根据需求调整）
 
@@ -43,7 +48,7 @@ public class JwtUtils {
     private static Claims getAllClaimsFromToken(String token) {
         try {
             return Jwts.parserBuilder()
-                    .setSigningKey(SECRET_KEY) // 使用 SecretKey 对象
+                    .setSigningKey(secretKey) // 使用 SecretKey 对象
                     .build()
                     .parseClaimsJws(token)
                     .getBody();
@@ -59,8 +64,13 @@ public class JwtUtils {
     }
 
     // 生成令牌（关键修改：签名方式调整）
-    public static String generateToken(UserDetails userDetails) {
+    public static String generateToken(MyUserDetails userDetails) {
+//        System.out.println("secretKey: " + secretKey);
+//        System.out.println("secretKeyString: " + secretKeyString);
         Map<String, Object> claims = new HashMap<>();
+        claims.put("role", userDetails.getAuthorities()); // 增加角色信息
+        claims.put("userId", userDetails.getUserId()); // 增加用户ID
+
         return doGenerateToken(claims, userDetails.getUsername());
     }
 
@@ -71,13 +81,19 @@ public class JwtUtils {
                 .setSubject(subject)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .signWith(SECRET_KEY) // 直接使用 SecretKey 签名
+                .signWith(secretKey) // 直接使用 SecretKey 签名
                 .compact();
     }
 
     // 验证令牌有效性
-    public static boolean validateToken(String token, UserDetails userDetails) {
+    public static boolean validateToken(String token, MyUserDetails userDetails) {
         String username = getUsernameFromToken(token);
         return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
     }
+
+    // 解析 JWT 令牌并返回 Claims
+    public static Claims parseJwtClaims(String token) {
+        return getAllClaimsFromToken(token);
+    }
+
 }

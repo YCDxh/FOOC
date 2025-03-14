@@ -12,3 +12,6 @@ spring:
   #.yml
   logging:
     config: classpath:logback-spring.xml
+
+  jwt:
+    secret: gUM+BALaPCW3O1VDxasOL26CNITirSV11zoWFeqT1mqfp9VuX3tFX2J60nGZDslIdKHfNUHPMJuR+PJZ+B3M2w==

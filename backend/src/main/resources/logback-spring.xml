@@ -184,10 +184,10 @@
         <!-- 附加所有自有包需要的 appender -->
         <appender-ref ref="INFO_FILE"/>
     </logger>
-    <!--    <logger name="com.YCDxh" level="ERROR">-->
-    <!--        &lt;!&ndash; 附加所有自有包需要的 appender &ndash;&gt;-->
-    <!--        <appender-ref ref="ERROR_FILE"/>-->
-    <!--    </logger>-->
+    <logger name="com.YCDxh" level="ERROR">
+        <!-- 附加所有自有包需要的 appender -->
+        <appender-ref ref="ERROR_FILE"/>
+    </logger>
 
     <root level="INFO">
         <appender-ref ref="CONSOLE"/> <!-- 控制台保留原有输出 -->

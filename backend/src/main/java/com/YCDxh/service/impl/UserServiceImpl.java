@@ -9,9 +9,11 @@ import com.YCDxh.model.enums.ResponseCode;
 import com.YCDxh.repository.UserRepository;
 import com.YCDxh.service.UserService;
 import com.YCDxh.utils.LogUtils;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,6 +56,47 @@ public class UserServiceImpl implements UserService {
                         .orElseThrow(() -> new UserException(
                                 ResponseCode.USER_NOT_EXIST.getCode(),
                                 String.format("User with ID %d not found", userId))));
+    }
+
+    // UserServiceImpl.java
+    @Override
+    public ApiResponse<UserDTO.UserResponse> updateUser(
+            Long userId,
+            UserDTO.UpdateRequest updateRequest
+    ) throws UserException {
+        // 1. 校验用户是否存在
+        User user = userRepository.findByUsername(updateRequest.getUsername()).orElse(null);
+
+        if (user == null) {
+            throw new UserException(ResponseCode.USER_NOT_EXIST);
+        }
+
+        // 2. 校验旧密码（如果修改密码）
+        if (StringUtils.isNotBlank(updateRequest.getPassword())) {
+            if (!BCrypt.checkpw(
+                    updateRequest.getOldPassword(),
+                    user.getPassword()
+            )) {
+                throw new UserException(ResponseCode.USERNAME_OR_PASSWORD_ERROR);
+            }
+        }
+
+        // 3. 更新字段（仅更新非空值）
+        if (StringUtils.isNotBlank(updateRequest.getUsername())) {
+            user.setUsername(updateRequest.getUsername());
+        }
+        if (StringUtils.isNotBlank(updateRequest.getEmail())) {
+            user.setEmail(updateRequest.getEmail());
+        }
+        if (StringUtils.isNotBlank(updateRequest.getPassword())) {
+            user.setPasswordHash(BCrypt.hashpw(
+                    updateRequest.getPassword(), BCrypt.gensalt()
+            ));
+        }
+
+        // 4. 执行更新
+        User userTemp = userRepository.save(user);
+        return ApiResponse.success(userMapper.toResponse(userTemp));
     }
 
 

@@ -1,12 +1,14 @@
 package com.YCDxh.controller;
 
 
+import com.YCDxh.aop.Log;
 import com.YCDxh.exception.UserException;
 import com.YCDxh.mapper.UserMapper;
 import com.YCDxh.model.ApiResponse;
 import com.YCDxh.model.dto.UserDTO;
 import com.YCDxh.model.entity.User;
 import com.YCDxh.model.enums.ResponseCode;
+import com.YCDxh.security.MyUserDetails;
 import com.YCDxh.service.UserService;
 import com.YCDxh.utils.JwtUtils;
 import io.swagger.annotations.Api;
@@ -61,8 +63,10 @@ public class UserController {
                     ResponseCode.INVALID_CREDENTIALS.getMessage(), null));
         }
         logKeep(request, true, user, loginRequest);
+
+        MyUserDetails userDetail = new MyUserDetails(user); // 需确保 User 和 MyUserDetails 字段匹配
         // 生成 JWT Token
-        String token = JwtUtils.generateToken(user); // 建议将 JWT 逻辑封装到 Service
+        String token = JwtUtils.generateToken(userDetail); // 建议将 JWT 逻辑封装到 Service
         //登录成功后，生成jwt令牌
 
         // 构建响应数据
@@ -86,4 +90,16 @@ public class UserController {
         ApiResponse<UserDTO.UserResponse> userResponse = userService.register(registerRequest);
         return userResponse;
     }
+
+    // UserController.java
+    @ApiOperation("更新用户信息")
+    @PutMapping("/{userId}")
+    public ApiResponse<UserDTO.UserResponse> updateUser(
+            @PathVariable("id") Long userId,
+            @RequestBody @Valid UserDTO.UpdateRequest updateRequest
+    ) {
+        return userService.updateUser(userId, updateRequest);
+    }
+
+
 }

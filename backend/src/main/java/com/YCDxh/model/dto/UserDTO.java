@@ -28,6 +28,26 @@ public class UserDTO {
         private String email;
     }
 
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class UpdateRequest {
+        private Long userId; // 非空校验，确保唯一性
+
+        @Size(min = 3, max = 50)
+        private String username; // 可空，允许不更新
+
+        @Email
+        private String email; // 可空，允许不更新
+
+        @Size(min = 6)
+        private String password; // 可空，允许不更新
+
+        @NotBlank
+        private String oldPassword; // 安全校验：需验证旧密码才能修改
+    }
+
     @Getter
     @Setter
     @NoArgsConstructor
