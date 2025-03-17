@@ -6,11 +6,12 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 
+public class LearningProgressDTO {
 
-public class ProgressDTO {
-
-    @Getter @Setter
-    @NoArgsConstructor @AllArgsConstructor
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class UpdateRequest {
         @NotNull
         private Long chapterId;

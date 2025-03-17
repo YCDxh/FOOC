@@ -23,7 +23,9 @@ public class SecurityConfig {
         http
                 .authorizeRequests(authorize -> authorize
                         .antMatchers("/swagger-ui/**", "/v2/api-docs", "/webjars/**", "/**", "/swagger-resources/**").permitAll() // 添加Swagger白名单
+                        .antMatchers("/api/chapter/create-chapter").hasRole("teacher")
                         .anyRequest().authenticated()
+
                 )
                 .httpBasic() // 如果需要基本认证
                 .and()

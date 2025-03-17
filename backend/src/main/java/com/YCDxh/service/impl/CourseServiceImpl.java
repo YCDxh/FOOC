@@ -27,9 +27,8 @@ import java.util.Set;
 public class CourseServiceImpl implements CourseService {
 
     private final CourseRepository courseRepository;
-
     private final CourseMapper courseMapper;
-    private Validator validator;
+    private final Validator validator;
 
 
     @Override
