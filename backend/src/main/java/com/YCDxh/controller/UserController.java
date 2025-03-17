@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.Date;
 import java.util.HashMap;
@@ -49,9 +50,23 @@ public class UserController {
 
     @ApiOperation(value = "用户登陆")
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody UserDTO.LoginRequest loginRequest,
+    public ResponseEntity<?> login(@Valid @RequestBody UserDTO.LoginRequest loginRequest,
                                    HttpServletResponse response,
                                    HttpServletRequest request) {
+
+        // 1. 从Session中获取存储的验证码（小写）
+        HttpSession session = request.getSession(false); // 不自动创建新Session
+        String storedCaptcha = (String) session.getAttribute("captcha");
+
+        // 2. 验证码校验
+        if (storedCaptcha == null || !storedCaptcha.equals(loginRequest.getCaptcha())) {
+            session.removeAttribute("captcha");
+            logKeep(request, false, null, loginRequest);
+
+            return ResponseEntity.badRequest().body(new ApiResponse<>(
+                    ResponseCode.INVALID_CAPTCHA.getCode(),
+                    ResponseCode.INVALID_CAPTCHA.getMessage(), null));
+        }
 
         // 调用 Service 层验证用户
         User user = userService.login(loginRequest);
@@ -62,6 +77,7 @@ public class UserController {
                     ResponseCode.INVALID_CREDENTIALS.getCode(),
                     ResponseCode.INVALID_CREDENTIALS.getMessage(), null));
         }
+        session.removeAttribute("captcha");
         logKeep(request, true, user, loginRequest);
 
         MyUserDetails userDetail = new MyUserDetails(user); // 需确保 User 和 MyUserDetails 字段匹配
@@ -86,16 +102,35 @@ public class UserController {
 
     @ApiOperation(value = "用户注册")
     @PostMapping("/register")
-    public ApiResponse<UserDTO.UserResponse> register(@RequestBody UserDTO.RegisterRequest registerRequest) {
+    public ApiResponse<UserDTO.UserResponse> register(@Valid @RequestBody UserDTO.RegisterRequest registerRequest,
+                                                      HttpServletRequest request) {
         ApiResponse<UserDTO.UserResponse> userResponse = userService.register(registerRequest);
+
+        // 1. 从Session中获取存储的验证码（小写）
+        HttpSession session = request.getSession(false); // 不自动创建新Session
+        String storedCaptcha = (String) session.getAttribute("captcha");
+        // 2. 验证码校验
+        if (storedCaptcha == null ||
+                !storedCaptcha.equalsIgnoreCase(registerRequest.getCaptcha())) { // 不区分大小写
+            session.removeAttribute("captcha"); // 验证失败后清除验证码
+            return new ApiResponse<>(
+                    ResponseCode.INVALID_CAPTCHA.getCode(),
+                    ResponseCode.INVALID_CAPTCHA.getMessage(),
+                    null
+            );
+        }
+        // 3. 验证成功后清除Session中的验证码（防复用）
+        session.removeAttribute("captcha");
+
         return userResponse;
     }
+
 
     // UserController.java
     @ApiOperation("更新用户信息")
     @PutMapping("/{userId}")
     public ApiResponse<UserDTO.UserResponse> updateUser(
-            @PathVariable("id") Long userId,
+            @PathVariable("userId") Long userId,
             @RequestBody @Valid UserDTO.UpdateRequest updateRequest
     ) {
         return userService.updateUser(userId, updateRequest);

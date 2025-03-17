@@ -27,6 +27,7 @@ public enum ResponseCode {
     METHOD_NOT_ALLOWED(405, "请求方法不允许"),
     REQUEST_TIMEOUT(408, "请求超时"),
     TOO_MANY_REQUESTS(429, "请求过于频繁"),
+    INVALID_CAPTCHA(402, "验证码错误"),
     /**
      * 参数相关的错误码：1开头
      **/
@@ -38,6 +39,7 @@ public enum ResponseCode {
     /**
      * 权限相关的错误码：2开头
      **/
+
     INVALID_TOKEN(2001, "访问令牌不合法"),
     ACCESS_DENIED(2002, "没有权限访问该资源"),
     USERNAME_OR_PASSWORD_ERROR(2003, "用户名或密码错误"),
