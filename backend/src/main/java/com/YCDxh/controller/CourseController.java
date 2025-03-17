@@ -33,4 +33,14 @@ public class CourseController {
         return courseService.getCourseById(courseId);
     }
 
+    @GetMapping("/search")
+    @ApiOperation(value = "根据课程名称搜索课程")
+    public ApiResponse<?> searchCoursesByName(
+            @RequestParam String name,
+            @RequestParam int page,
+            @RequestParam int size
+    ) {
+        return courseService.searchCoursesByName(name, page, size);
+    }
+
 }

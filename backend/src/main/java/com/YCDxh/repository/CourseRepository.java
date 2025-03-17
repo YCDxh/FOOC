@@ -1,7 +1,10 @@
 package com.YCDxh.repository;
 
+import com.YCDxh.model.dto.CourseDTO;
 import com.YCDxh.model.entity.Course;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -23,4 +26,10 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
     boolean existsCourseByCourseId(Long courseId);
 
     boolean existsByTitle(String title);
+
+    @Query("SELECT c FROM Course c WHERE LOWER(c.title) LIKE %:courseName%")
+    Page<CourseDTO.CourseResponse> searchByName(
+            @Param("courseName") String courseName,
+            Pageable pageable
+    );
 }

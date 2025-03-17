@@ -1,6 +1,6 @@
 package com.YCDxh.security;
 
-import com.YCDxh.service.CustomUserDetailsService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
