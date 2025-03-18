@@ -97,4 +97,18 @@ public class CourseServiceImpl implements CourseService {
 
         return ApiResponse.success(result);
     }
+
+
+    @Override
+    public void deleteCourse(Long courseId) {
+        if (courseId == null) {
+            throw new UserException(ResponseCode.PARAM_ERROR);
+        }
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new UserException(ResponseCode.COURSE_NOT_EXIST));
+        if (course == null) {
+            throw new UserException(ResponseCode.COURSE_NOT_EXIST);
+        }
+        courseRepository.deleteById(courseId);
+    }
 }

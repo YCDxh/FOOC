@@ -15,4 +15,6 @@ public interface CourseService {
             int size
     );
 
+    void deleteCourse(Long courseId);
+
 }

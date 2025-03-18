@@ -43,4 +43,11 @@ public class CourseController {
         return courseService.searchCoursesByName(name, page, size);
     }
 
+    @ApiOperation(value = "根据课程ID删除课程")
+    @DeleteMapping("/{courseId}")
+    public ApiResponse<?> deleteCourse(@PathVariable("courseId") Long courseId) {
+        courseService.deleteCourse(courseId);
+        return ApiResponse.success("删除成功");
+    }
+
 }
