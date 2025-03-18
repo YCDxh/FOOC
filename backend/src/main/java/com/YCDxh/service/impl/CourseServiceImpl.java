@@ -87,13 +87,11 @@ public class CourseServiceImpl implements CourseService {
 
         // 执行查询
         String searchTerm = "%" + courseName.toLowerCase() + "%";
-        Page<CourseDTO.CourseResponse> coursePage = courseRepository.searchByName(searchTerm, pageable);
+        Page<Course> coursePage = courseRepository.searchByName(searchTerm, pageable);
+        Page<CourseDTO.CourseResponse> courseResponsePage = coursePage.map(courseMapper::toCourseResponse);
 
         // 转换为DTO
-        PagedResult<CourseDTO.CourseResponse> result = new PagedResult<>(coursePage);
-//        result.setContent(coursePage.getContent().stream()
-//                .map(courseMapper::toCourseResponse)
-//                .collect(Collectors.toList()));
+        PagedResult<CourseDTO.CourseResponse> result = new PagedResult<>(courseResponsePage);
 
         return ApiResponse.success(result);
     }

@@ -18,7 +18,10 @@ import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 import javax.validation.Validator;
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author YCDxhg
@@ -67,5 +70,22 @@ public class ChapterServiceImpl implements ChapterService {
     @Override
     public ApiResponse<ChapterDTO.ChapterResponse> getChapterByCourseId(Long courseId) {
         return null;
+    }
+
+    @Override
+    public ApiResponse<List<ChapterDTO.ChapterResponse>> getAllChapters(Long courseId) {
+        // 1. 校验课程存在
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new UserException(ResponseCode.COURSE_NOT_EXIST));
+        // 重点修改：将实体列表转换为DTO列表
+        List<Chapter> chapters = chapterRepository.findAllByCourse(course);
+        List<ChapterDTO.ChapterResponse> responses = chapters.stream()
+                .map(chapterMapper::toResponse)
+                .collect(Collectors.toList());
+        ; // 或使用chapterMapper.toResponseList(chapters)（若存在批量转换方法）
+
+        return ApiResponse.success(responses);
+
+//        return ApiResponse.success(chapterRepository.findAllByCourse(course));
     }
 }

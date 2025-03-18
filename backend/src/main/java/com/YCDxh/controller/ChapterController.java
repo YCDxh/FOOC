@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @Slf4j
 @RestController
 @Api(value = "ChapterController", tags = "chapter")
@@ -27,5 +29,10 @@ public class ChapterController {
         return chapterService.createChapter(request);
     }
 
+    @PostMapping("/getChapterByCourseId")
+    @ApiOperation(value = "根据课程ID获取章节信息")
+    public ApiResponse<List<ChapterDTO.ChapterResponse>> getChapterByCourseId(Long courseId) {
+        return chapterService.getAllChapters(courseId);
+    }
 
 }

@@ -28,7 +28,7 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
     boolean existsByTitle(String title);
 
     @Query("SELECT c FROM Course c WHERE LOWER(c.title) LIKE %:courseName%")
-    Page<CourseDTO.CourseResponse> searchByName(
+    Page<Course> searchByName(
             @Param("courseName") String courseName,
             Pageable pageable
     );
