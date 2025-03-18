@@ -15,4 +15,7 @@ public interface ChapterService {
     ApiResponse<ChapterDTO.ChapterResponse> getChapterByCourseId(Long courseId);
 
     ApiResponse<List<ChapterDTO.ChapterResponse>> getAllChapters(Long courseId);
+
+    void deleteAllChapters(Long courseId);
+
 }

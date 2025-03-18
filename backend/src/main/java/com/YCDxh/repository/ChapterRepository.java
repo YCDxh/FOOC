@@ -19,4 +19,7 @@ public interface ChapterRepository extends JpaRepository<Chapter, Long> {
     boolean existsByChapterId(Long chapterId);
 
     List<Chapter> findAllByCourse(Course course);
+
+    void deleteAllByCourseCourseId(Long courseId);
+
 }

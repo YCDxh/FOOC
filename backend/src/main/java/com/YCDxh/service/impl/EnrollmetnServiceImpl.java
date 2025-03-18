@@ -1,6 +1,8 @@
 package com.YCDxh.service.impl;
 
+import com.YCDxh.model.entity.Course;
 import com.YCDxh.model.entity.Enrollment;
+import com.YCDxh.model.entity.User;
 import com.YCDxh.repository.CourseRepository;
 import com.YCDxh.repository.EnrollmentRepository;
 import com.YCDxh.repository.UserRepository;
@@ -20,18 +22,19 @@ public class EnrollmetnServiceImpl implements EnrollmentService {
     private final CourseRepository courseRepository;
 
     @Override
-    public void addEnrollment(Long userId, Long courseId) {
+    public void addEnrollment(Long studentId, Long courseId) {
         Enrollment enrollment = new Enrollment();
 
         enrollment.setCourse(courseRepository.findByCourseId(courseId));
-        enrollment.setStudent(userRepository.findByUserId(userId));
+        enrollment.setStudent(userRepository.findByUserId(studentId));
         enrollment.setEnrolledAt(LocalDateTime.now());
         enrollmentRepository.save(enrollment);
 
     }
 
     @Override
-    public void deleteEnrollment(Long userId, Long courseId) {
+    public void deleteEnrollment(Long studentId, Long courseId) {
+        enrollmentRepository.deleteByCourseCourseIdAndStudentUserId(studentId, courseId);
 
     }
 }

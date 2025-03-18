@@ -88,4 +88,9 @@ public class ChapterServiceImpl implements ChapterService {
 
 //        return ApiResponse.success(chapterRepository.findAllByCourse(course));
     }
+
+    @Override
+    public void deleteAllChapters(Long courseId) {
+        chapterRepository.deleteAllByCourseCourseId(courseId);
+    }
 }

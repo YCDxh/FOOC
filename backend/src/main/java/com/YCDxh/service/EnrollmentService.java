@@ -1,7 +1,7 @@
 package com.YCDxh.service;
 
 public interface EnrollmentService {
-    void addEnrollment(Long userId, Long courseId);
+    void addEnrollment(Long studentId, Long courseId);
 
-    void deleteEnrollment(Long userId, Long courseId);
+    void deleteEnrollment(Long studentId, Long courseId);
 }

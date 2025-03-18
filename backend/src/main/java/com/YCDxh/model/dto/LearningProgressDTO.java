@@ -6,6 +6,9 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 
+/**
+ * @author YCDxhg
+ */
 public class LearningProgressDTO {
 
     @Getter
@@ -24,6 +27,8 @@ public class LearningProgressDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
+    @Getter
+    @Setter
     public static class ProgressResponse {
         private Long progressId;
         private Long chapterId;

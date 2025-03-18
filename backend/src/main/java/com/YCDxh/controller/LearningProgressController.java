@@ -44,5 +44,23 @@ public class LearningProgressController {
         learningProgressService.createProgress(userId, request.getChapterId());
     }
 
+    @PostMapping("/delete")
+    @ApiOperation(value = "删除学习进度")
+    public void deleteProgress(
+            @RequestHeader("user-id") Long userId, // 假设从Header获取用户ID
+            @RequestBody @Valid LearningProgressDTO.UpdateRequest request
+    ) {
+        learningProgressService.deleteProgress(request.getChapterId(), userId);
+    }
+
+    @PostMapping("/get")
+    @ApiOperation(value = "获取学习进度")
+    public ApiResponse<LearningProgressDTO.ProgressResponse> getProgress(
+            @RequestHeader("user-id") Long userId, // 假设从Header获取用户ID
+            @RequestBody @Valid LearningProgressDTO.UpdateRequest request
+    ) {
+        return learningProgressService.getProgressByUserIdAndChapterId(userId, request.getChapterId());
+    }
+
 
 }

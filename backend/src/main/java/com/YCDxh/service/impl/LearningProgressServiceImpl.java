@@ -11,7 +11,9 @@ import com.YCDxh.repository.UserRepository;
 import com.YCDxh.service.LearningProgressService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -21,6 +23,7 @@ import java.time.LocalDateTime;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional
 public class LearningProgressServiceImpl implements LearningProgressService {
     private final LearningProgressRepository learningProgressRepository;
     private final LearningProgressMapper learningProgressMapper;
@@ -28,8 +31,8 @@ public class LearningProgressServiceImpl implements LearningProgressService {
     private final ChapterRepository chapterRepository;
 
     @Override
-    public ApiResponse<LearningProgressDTO.ProgressResponse> updateProgress(Long progressId, LearningProgressDTO.UpdateRequest request) {
-        LearningProgress learningProgress = learningProgressRepository.findByProgressId(progressId);
+    public ApiResponse<LearningProgressDTO.ProgressResponse> updateProgress(Long userId, LearningProgressDTO.UpdateRequest request) {
+        LearningProgress learningProgress = learningProgressRepository.findByChapterChapterIdAndStudentUserId(request.getChapterId(), userId);
         learningProgress.setIsCompleted(request.getIsCompleted());
         if (request.getIsCompleted()) {
             learningProgress.setCompletedAt(LocalDateTime.now());
@@ -51,7 +54,27 @@ public class LearningProgressServiceImpl implements LearningProgressService {
         learningProgress.setStudent(userRepository.findByUserId(userId));
         learningProgress.setChapter(chapterRepository.findByChapterId(chapterId));
         learningProgress.setIsCompleted(false);
+        learningProgress.setCompletedAt(null);
 
         learningProgressRepository.save(learningProgress);
+    }
+
+    @Override
+    public void deleteProgress(Long chapterId, Long userId) {
+        learningProgressRepository.deleteByChapterChapterIdAndStudentUserId(chapterId, userId);
+    }
+
+    @Override
+    public ApiResponse<LearningProgressDTO.ProgressResponse> getProgressByUserIdAndChapterId(Long userId, Long chapterId) {
+        LearningProgress learningProgress = learningProgressRepository.findByChapterChapterIdAndStudentUserId(chapterId, userId);
+//        Hibernate.initialize(learningProgress.getChapter());
+//        return ApiResponse.success(learningProgressMapper.toProgressResponse(learningProgress));
+        // 丑陋
+        LearningProgressDTO.ProgressResponse learningProgressDTO = new LearningProgressDTO.ProgressResponse();
+        learningProgressDTO.setProgressId(learningProgress.getProgressId());
+        learningProgressDTO.setChapterId(learningProgress.getChapter().getChapterId());
+        learningProgressDTO.setIsCompleted(learningProgress.getIsCompleted());
+        learningProgressDTO.setCompletedAt(learningProgress.getCompletedAt());
+        return ApiResponse.success(learningProgressDTO);
     }
 }

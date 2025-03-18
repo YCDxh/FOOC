@@ -35,4 +35,11 @@ public class ChapterController {
         return chapterService.getAllChapters(courseId);
     }
 
+    @PostMapping("/delete")
+    @ApiOperation(value = "根据课程ID删除所有章节")
+    public ApiResponse<?> deleteAllChapters(Long courseId) {
+        chapterService.deleteAllChapters(courseId);
+        return ApiResponse.success();
+    }
+
 }

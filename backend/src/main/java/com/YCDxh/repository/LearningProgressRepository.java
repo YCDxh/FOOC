@@ -9,5 +9,9 @@ import org.springframework.stereotype.Repository;
 public interface LearningProgressRepository extends JpaRepository<LearningProgress, Long> {
     LearningProgress findByProgressId(Long progressId);
 
+    LearningProgress findByChapterChapterIdAndStudentUserId(Long chapterId, Long studentId);
+
+    void deleteByChapterChapterIdAndStudentUserId(Long chapterId, Long studentId);
+
 
 }
