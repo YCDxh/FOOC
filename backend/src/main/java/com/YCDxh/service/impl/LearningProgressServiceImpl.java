@@ -66,15 +66,21 @@ public class LearningProgressServiceImpl implements LearningProgressService {
 
     @Override
     public ApiResponse<LearningProgressDTO.ProgressResponse> getProgressByUserIdAndChapterId(Long userId, Long chapterId) {
-        LearningProgress learningProgress = learningProgressRepository.findByChapterChapterIdAndStudentUserId(chapterId, userId);
+//        LearningProgress learningProgress = learningProgressRepository.findByChapterChapterIdAndStudentUserId(chapterId, userId);
 //        Hibernate.initialize(learningProgress.getChapter());
 //        return ApiResponse.success(learningProgressMapper.toProgressResponse(learningProgress));
+
+        LearningProgress learningProgress = learningProgressRepository.myFind(chapterId, userId);
+
+        return ApiResponse.success(learningProgressMapper.toProgressResponse(learningProgress));
+
+
         // 丑陋
-        LearningProgressDTO.ProgressResponse learningProgressDTO = new LearningProgressDTO.ProgressResponse();
-        learningProgressDTO.setProgressId(learningProgress.getProgressId());
-        learningProgressDTO.setChapterId(learningProgress.getChapter().getChapterId());
-        learningProgressDTO.setIsCompleted(learningProgress.getIsCompleted());
-        learningProgressDTO.setCompletedAt(learningProgress.getCompletedAt());
-        return ApiResponse.success(learningProgressDTO);
+//        LearningProgressDTO.ProgressResponse learningProgressDTO = new LearningProgressDTO.ProgressResponse();
+//        learningProgressDTO.setProgressId(learningProgress.getProgressId());
+//        learningProgressDTO.setChapterId(learningProgress.getChapter().getChapterId());
+//        learningProgressDTO.setIsCompleted(learningProgress.getIsCompleted());
+//        learningProgressDTO.setCompletedAt(learningProgress.getCompletedAt());
+//        return ApiResponse.success(learningProgressDTO);
     }
 }

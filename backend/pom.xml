@@ -150,13 +150,13 @@
             <version>3.0.2</version> <!-- 升级到较新版本 -->
         </dependency>
 
+
         <!-- 其他 -->
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
             <version>1.2.83</version>
         </dependency>
-
     </dependencies>
 
     <build>
