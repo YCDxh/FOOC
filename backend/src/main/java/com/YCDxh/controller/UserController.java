@@ -39,7 +39,6 @@ import static com.YCDxh.utils.LogUtils.logKeep;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
-    private final UserMapper userMapper;
 
 
     @ApiOperation(value = "根据ID获取用户信息")
@@ -51,17 +50,13 @@ public class UserController {
     @ApiOperation(value = "用户登陆")
     @PostMapping("/login")
     @Log
-    public ResponseEntity<?> login(@Valid @RequestBody UserDTO.LoginRequest loginRequest,
-                                   HttpServletRequest request) {
-
+    public ApiResponse<UserDTO.UserResponse> login(
+            @Valid @RequestBody UserDTO.LoginRequest loginRequest, HttpServletRequest request) {
         try {
             UserDTO.UserResponse userResponse = userService.login(loginRequest, request);
-            return ResponseEntity.ok()
-                    .body(new ApiResponse<>(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getMessage(), userResponse));
-
+            return ApiResponse.success(userResponse);
         } catch (UserException e) {
-            return ResponseEntity.status(e.getCode())
-                    .body(new ApiResponse<>(e.getCode(), e.getMessage(), null));
+            return ApiResponse.fail(e.getCode(), e.getMessage());
         }
 
     }
@@ -69,27 +64,16 @@ public class UserController {
 
     @ApiOperation(value = "用户注册")
     @PostMapping("/register")
-    public ApiResponse<UserDTO.UserResponse> register(@Valid @RequestBody UserDTO.RegisterRequest registerRequest,
-                                                      HttpServletRequest request) {
-        ApiResponse<UserDTO.UserResponse> userResponse = userService.register(registerRequest);
-
-        // 1. 从Session中获取存储的验证码（小写）
-        HttpSession session = request.getSession(false); // 不自动创建新Session
-        String storedCaptcha = (String) session.getAttribute("captcha");
-        // 2. 验证码校验
-        if (storedCaptcha == null ||
-                !storedCaptcha.equalsIgnoreCase(registerRequest.getCaptcha())) { // 不区分大小写
-            session.removeAttribute("captcha"); // 验证失败后清除验证码
-            return new ApiResponse<>(
-                    ResponseCode.INVALID_CAPTCHA.getCode(),
-                    ResponseCode.INVALID_CAPTCHA.getMessage(),
-                    null
-            );
+    @Log
+    public ApiResponse<UserDTO.UserResponse> register(
+            @Valid @RequestBody UserDTO.RegisterRequest registerRequest, HttpServletRequest request) {
+        try {
+            UserDTO.UserResponse userResponse = userService.register(registerRequest, request);
+            return ApiResponse.success(userResponse);
+        } catch (UserException e) {
+            return ApiResponse.fail(e.getCode(), e.getMessage());
         }
-        // 3. 验证成功后清除Session中的验证码（防复用）
-        session.removeAttribute("captcha");
 
-        return userResponse;
     }
 
 

@@ -21,7 +21,7 @@ public interface UserService {
             Long userId, UserDTO.UpdateRequest request)
             throws UserException;
 
-    ApiResponse<UserDTO.UserResponse> register(UserDTO.RegisterRequest request);
+    UserDTO.UserResponse register(UserDTO.RegisterRequest request, HttpServletRequest httpRequest);
 
     UserDTO.UserResponse login(UserDTO.LoginRequest request, HttpServletRequest httpRequest);
 

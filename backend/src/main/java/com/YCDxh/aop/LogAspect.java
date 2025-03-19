@@ -35,16 +35,6 @@ public class LogAspect {
     @Around("@annotation(com.YCDxh.aop.Log)")//环绕
     public Object recordLog(ProceedingJoinPoint joinPoint) throws Throwable {
 
-//        HttpServletRequest request = ((ServletRequestAttributes)
-//                RequestContextHolder.currentRequestAttributes()).getRequest();
-
-
-        //操作人ID - 当前登录员工ID
-        //获取请求头中的jwt令牌, 解析令牌
-//        String jwt = request.getHeader("token");
-//        jwt = request.getParameter("token");
-//        Claims claims = JwtUtils.parseJwtClaims(jwt);
-//        Integer operateUser = (Integer) claims.get("userId");
 
         //操作时间
         LocalDateTime operateTime = LocalDateTime.now();

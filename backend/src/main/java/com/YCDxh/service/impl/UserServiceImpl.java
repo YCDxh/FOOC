@@ -45,7 +45,6 @@ public class UserServiceImpl implements UserService {
                 .stream()
                 .map(userMapper::toResponse)
                 .collect(Collectors.toList());
-//        return null;
     }
 
 
@@ -105,24 +104,32 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public ApiResponse<UserDTO.UserResponse> register(UserDTO.RegisterRequest request) {
+    public UserDTO.UserResponse register(UserDTO.RegisterRequest request
+            , HttpServletRequest httpRequest) {
+
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new UserException(ResponseCode.EMAIL_OCCUPIED);
         }
+
+        if (userRepository.existsByUsername(request.getUsername())) {
+            throw new UserException(ResponseCode.USERNAME_OCCUPIED);
+        }
+
+        CaptchaService.validateCaptcha(request.getCaptcha(), httpRequest);
+
         User user = new User();
         user.setUsername(request.getUsername());
-        // 有待商议
         user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
-
         user.setEmail(request.getEmail());
         User userTemp = userRepository.save(user);
-        return ApiResponse.success(userMapper.toResponse(userTemp));
+
+        StpUtil.login(userTemp.getUserId());
+        return userMapper.toResponse(userTemp);
     }
 
     /**
      * 用户登录实现
      */
-    // UserServiceImpl.java（修改后）
     @Override
     public UserDTO.UserResponse login(UserDTO.LoginRequest request
             , HttpServletRequest httpRequest) {
