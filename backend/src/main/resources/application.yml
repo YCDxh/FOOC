@@ -1,4 +1,9 @@
 spring:
+  minio:
+    endpoint: http://127.0.0.1:7944 #Minio服务所在地址
+    bucketName: fooc #存储桶名称
+    accessKey: oRrNvZVcSgps6BOpWQYZ #访问的key
+    secretKey: bkIN0gsoP5etPItz63uOS5PztHXPFmLNVcInVytR #访问的秘钥
   datasource:
     url: jdbc:mysql://localhost:3306/simple_mooc?useSSL=false&serverTimezone=UTC
     username: root
@@ -35,3 +40,4 @@ spring:
     token-style: uuid
     # 是否输出操作日志
     is-log: true
+
