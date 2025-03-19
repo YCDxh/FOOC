@@ -44,7 +44,6 @@ public class UserController {
 
     @ApiOperation(value = "根据ID获取用户信息")
     @GetMapping("/{id}")
-    @Log
     public ApiResponse<UserDTO.UserResponse> getUserById(@PathVariable("id") Long userId) {
         return userService.getUser(userId);
     }
@@ -53,51 +52,17 @@ public class UserController {
     @PostMapping("/login")
     @Log
     public ResponseEntity<?> login(@Valid @RequestBody UserDTO.LoginRequest loginRequest,
-                                   HttpServletResponse response,
                                    HttpServletRequest request) {
 
-        // 1. 从Session中获取存储的验证码（小写）
-        HttpSession session = request.getSession(false); // 不自动创建新Session
-        String storedCaptcha = (String) session.getAttribute("captcha");
+        try {
+            UserDTO.UserResponse userResponse = userService.login(loginRequest, request);
+            return ResponseEntity.ok()
+                    .body(new ApiResponse<>(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getMessage(), userResponse));
 
-        // 2. 验证码校验
-        if (storedCaptcha == null || !storedCaptcha.equals(loginRequest.getCaptcha())) {
-            session.removeAttribute("captcha");
-            logKeep(request, false, null, loginRequest);
-
-            return ResponseEntity.badRequest().body(new ApiResponse<>(
-                    ResponseCode.INVALID_CAPTCHA.getCode(),
-                    ResponseCode.INVALID_CAPTCHA.getMessage(), null));
+        } catch (UserException e) {
+            return ResponseEntity.status(e.getCode())
+                    .body(new ApiResponse<>(e.getCode(), e.getMessage(), null));
         }
-
-        // 调用 Service 层验证用户
-        User user = userService.login(loginRequest);
-        if (user == null) {
-            logKeep(request, false, null, loginRequest);
-            // 用户不存在，返回错误响应
-            return ResponseEntity.badRequest().body(new ApiResponse<>(
-                    ResponseCode.INVALID_CREDENTIALS.getCode(),
-                    ResponseCode.INVALID_CREDENTIALS.getMessage(), null));
-        }
-        session.removeAttribute("captcha");
-        logKeep(request, true, user, loginRequest);
-
-        MyUserDetails userDetail = new MyUserDetails(user); // 需确保 User 和 MyUserDetails 字段匹配
-        // 生成 JWT Token
-        String token = JwtUtils.generateToken(userDetail); // 建议将 JWT 逻辑封装到 Service
-        //登录成功后，生成jwt令牌
-
-        // 构建响应数据
-        UserDTO.UserResponse userResponse = userMapper.toResponse(user);
-        Map<String, Object> data = new HashMap<>();
-        data.put("user", userResponse);
-        data.put("token", token);
-
-        // 返回成功响应
-        return ResponseEntity.ok()
-                .header("Authorization", "Bearer " + token) // 设置响应头
-                .body(new ApiResponse<>(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getMessage(), data));
-
 
     }
 

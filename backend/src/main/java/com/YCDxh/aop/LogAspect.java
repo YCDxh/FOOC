@@ -1,8 +1,10 @@
 package com.YCDxh.aop;
 
+import cn.dev33.satoken.stp.StpUtil;
 import com.YCDxh.mapper.OperaLogMapper;
 import com.YCDxh.model.entity.OperaLog;
 import com.YCDxh.utils.JwtUtils;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
@@ -33,8 +35,8 @@ public class LogAspect {
     @Around("@annotation(com.YCDxh.aop.Log)")//环绕
     public Object recordLog(ProceedingJoinPoint joinPoint) throws Throwable {
 
-        HttpServletRequest request = ((ServletRequestAttributes)
-                RequestContextHolder.currentRequestAttributes()).getRequest();
+//        HttpServletRequest request = ((ServletRequestAttributes)
+//                RequestContextHolder.currentRequestAttributes()).getRequest();
 
 
         //操作人ID - 当前登录员工ID
@@ -55,22 +57,29 @@ public class LogAspect {
 
         //操作方法参数
         Object[] args = joinPoint.getArgs();
-        String methodParams = Arrays.toString(args);
+//        String methodParams = Arrays.toString(args);
+        String methodParams = JSON.toJSONString(args);
         log.info("方法执行前参数: {}", methodParams);
 
-
         long begin = System.currentTimeMillis();
+
+
         //调用原始目标方法运行
         Object result = joinPoint.proceed();
         long end = System.currentTimeMillis();
 
+
+        Integer operateUser = null;
+        if (StpUtil.isLogin()) {
+            operateUser = StpUtil.getLoginIdAsInt();
+        }
         //方法返回值
         String returnValue = JSONObject.toJSONString(result);
 
         //耗时（单位：毫秒）
         Long costTime = end - begin;
 
-        Integer operateUser = 1111;
+
         //记录操作日志
         OperaLog operateLog = new OperaLog(null, operateUser, operateTime, className, methodName, methodParams, returnValue, costTime);
         operateLogMapper.insert(operateLog);

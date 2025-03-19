@@ -8,6 +8,7 @@ import com.YCDxh.model.entity.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 
@@ -22,7 +23,7 @@ public interface UserService {
 
     ApiResponse<UserDTO.UserResponse> register(UserDTO.RegisterRequest request);
 
-    User login(UserDTO.LoginRequest request);
+    UserDTO.UserResponse login(UserDTO.LoginRequest request, HttpServletRequest httpRequest);
 
 
 }

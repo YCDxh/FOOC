@@ -1,5 +1,6 @@
 package com.YCDxh.service.impl;
 
+import cn.dev33.satoken.stp.StpUtil;
 import com.YCDxh.exception.UserException;
 import com.YCDxh.mapper.UserMapper;
 import com.YCDxh.model.ApiResponse;
@@ -7,6 +8,7 @@ import com.YCDxh.model.dto.UserDTO;
 import com.YCDxh.model.entity.User;
 import com.YCDxh.model.enums.ResponseCode;
 import com.YCDxh.repository.UserRepository;
+import com.YCDxh.service.CaptchaService;
 import com.YCDxh.service.UserService;
 import com.YCDxh.utils.LogUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
@@ -17,7 +19,9 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import sun.text.normalizer.ICUBinary;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -117,29 +121,22 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 用户登录实现
-     * 根据用户提供的登录请求信息，验证用户身份并返回用户响应信息。
-     * 此方法首先检查用户是否存在，如果用户不存在或密码不正确，则抛出统一的用户异常。
-     *
-     * @param request 用户登录请求数据传输对象，包含用户名和密码等登录所需信息
-     * @return UserDTO.UserResponse 用户响应数据传输对象，包含用户登录成功后的相关信息
-     * @throws UserException 如果用户不存在或密码错误，抛出自定义的用户异常，包含错误代码和消息
      */
     // UserServiceImpl.java（修改后）
     @Override
-    public User login(UserDTO.LoginRequest request) {
-        // 1. 检查用户是否存在
+    public UserDTO.UserResponse login(UserDTO.LoginRequest request
+            , HttpServletRequest httpRequest) {
+
+        CaptchaService.validateCaptcha(request.getCaptcha(), httpRequest);
+
+        // 1. 检查用户是否存在, 密码是否正确
         User user = userRepository.findByUsername(request.getUsername()).orElse(null);
-        if (user == null) {
-            return null;
+        if (user == null || !passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
+            throw new UserException(ResponseCode.USERNAME_OR_PASSWORD_ERROR);
         }
-
-        // 2. 检查密码是否正确
-        if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
-            return null;
-        }
-
-        // 3. 登录成功，返回用户对象
-        return user;
+        // 2. 登录，生成token
+        StpUtil.login(user.getUserId());
+        return userMapper.toResponse(user);
     }
 }
 
