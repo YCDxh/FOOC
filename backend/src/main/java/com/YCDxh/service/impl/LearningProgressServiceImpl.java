@@ -48,7 +48,7 @@ public class LearningProgressServiceImpl implements LearningProgressService {
     }
 
     @Override
-    public void createProgress(Long userId, Long chapterId) {
+    public ApiResponse<?> createProgress(Long userId, Long chapterId) {
         LearningProgress learningProgress = new LearningProgress();
 
         learningProgress.setStudent(userRepository.findByUserId(userId));
@@ -57,30 +57,21 @@ public class LearningProgressServiceImpl implements LearningProgressService {
         learningProgress.setCompletedAt(null);
 
         learningProgressRepository.save(learningProgress);
+        return ApiResponse.success("学习记录创建成功");
     }
 
     @Override
-    public void deleteProgress(Long chapterId, Long userId) {
+    public ApiResponse<?> deleteProgress(Long chapterId, Long userId) {
         learningProgressRepository.deleteByChapterChapterIdAndStudentUserId(chapterId, userId);
+        return ApiResponse.success("学习记录删除成功");
     }
 
     @Override
     public ApiResponse<LearningProgressDTO.ProgressResponse> getProgressByUserIdAndChapterId(Long userId, Long chapterId) {
-//        LearningProgress learningProgress = learningProgressRepository.findByChapterChapterIdAndStudentUserId(chapterId, userId);
-//        Hibernate.initialize(learningProgress.getChapter());
-//        return ApiResponse.success(learningProgressMapper.toProgressResponse(learningProgress));
-
         LearningProgress learningProgress = learningProgressRepository.myFind(chapterId, userId);
 
         return ApiResponse.success(learningProgressMapper.toProgressResponse(learningProgress));
 
 
-        // 丑陋
-//        LearningProgressDTO.ProgressResponse learningProgressDTO = new LearningProgressDTO.ProgressResponse();
-//        learningProgressDTO.setProgressId(learningProgress.getProgressId());
-//        learningProgressDTO.setChapterId(learningProgress.getChapter().getChapterId());
-//        learningProgressDTO.setIsCompleted(learningProgress.getIsCompleted());
-//        learningProgressDTO.setCompletedAt(learningProgress.getCompletedAt());
-//        return ApiResponse.success(learningProgressDTO);
     }
 }

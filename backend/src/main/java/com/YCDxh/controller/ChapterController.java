@@ -1,5 +1,6 @@
 package com.YCDxh.controller;
 
+import com.YCDxh.aop.Log;
 import com.YCDxh.mapper.ChapterMapper;
 import com.YCDxh.model.ApiResponse;
 import com.YCDxh.model.dto.ChapterDTO;
@@ -31,6 +32,7 @@ public class ChapterController {
 
     @PostMapping("/getChapterByCourseId")
     @ApiOperation(value = "根据课程ID获取章节信息")
+    @Log
     public ApiResponse<List<ChapterDTO.ChapterResponse>> getChapterByCourseId(Long courseId) {
         return chapterService.getAllChapters(courseId);
     }

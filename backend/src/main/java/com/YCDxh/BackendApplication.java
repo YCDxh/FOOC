@@ -5,6 +5,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
+/**
+ * @author YCDxhg
+ */
 @SpringBootApplication
 @EnableAspectJAutoProxy
 public class BackendApplication {

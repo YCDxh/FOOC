@@ -12,9 +12,9 @@ public interface LearningProgressService {
 
     ApiResponse<LearningProgressDTO.ProgressResponse> getProgressById(Long progressId);
 
-    void createProgress(Long userId, Long chapterId);
+    ApiResponse<?> createProgress(Long userId, Long chapterId);
 
-    void deleteProgress(Long chapterId, Long userId);
+    ApiResponse<?> deleteProgress(Long chapterId, Long userId);
 
     @Transactional(readOnly = true)
     ApiResponse<LearningProgressDTO.ProgressResponse> getProgressByUserIdAndChapterId(Long userId, Long chapterId);

@@ -3,6 +3,7 @@ package com.YCDxh.exception;
 import com.YCDxh.model.ApiResponse;
 import com.YCDxh.exception.UserException;
 import com.YCDxh.model.enums.ResponseCode;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 
 import org.slf4j.LoggerFactory;
@@ -14,8 +15,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import javax.servlet.http.HttpServletRequest;
 
 @ControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
-    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+//    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(UserException.class)
     public ResponseEntity<ApiResponse> handleUserException(UserException e) {

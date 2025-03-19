@@ -44,12 +44,14 @@ public class UserController {
 
     @ApiOperation(value = "根据ID获取用户信息")
     @GetMapping("/{id}")
+    @Log
     public ApiResponse<UserDTO.UserResponse> getUserById(@PathVariable("id") Long userId) {
         return userService.getUser(userId);
     }
 
     @ApiOperation(value = "用户登陆")
     @PostMapping("/login")
+    @Log
     public ResponseEntity<?> login(@Valid @RequestBody UserDTO.LoginRequest loginRequest,
                                    HttpServletResponse response,
                                    HttpServletRequest request) {
