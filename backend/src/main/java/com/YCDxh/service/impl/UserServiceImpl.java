@@ -10,6 +10,7 @@ import com.YCDxh.model.enums.ResponseCode;
 import com.YCDxh.repository.UserRepository;
 import com.YCDxh.service.CaptchaService;
 import com.YCDxh.service.UserService;
+import com.YCDxh.utils.RedisCacheUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +40,7 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserDetailsService userDetailsService;
     private final RedisTemplate<String, Object> redisTemplate;
+    private final RedisCacheUtil redisCacheUtil;
 
 
     @Override
@@ -66,70 +68,74 @@ public class UserServiceImpl implements UserService {
 
     // UserServiceImpl.java
     @Override
-    public ApiResponse<UserDTO.UserResponse> updateUser(
-            Long userId,
-            UserDTO.UpdateRequest updateRequest
+    public UserDTO.UserResponse updateUser(UserDTO.UpdateRequest updateRequest
     ) throws UserException {
-        // 1. 校验用户是否存在
-        User user = userRepository.findByUsername(updateRequest.getUsername()).orElse(null);
 
-        if (user == null) {
-            throw new UserException(ResponseCode.USER_NOT_EXIST);
-        }
-
+        // 1. 通过工具类获取用户信息（先查缓存，未命中则查 DB）
+        User user = redisCacheUtil.getFromCacheOrDBWithLock(
+                "user:info",
+                updateRequest.getUserId(),
+                () -> {
+                    // 数据库查询（抛异常）
+                    return (
+                            userRepository.findById(updateRequest.getUserId())
+                                    .orElseThrow(() -> new UserException(ResponseCode.USER_NOT_EXIST))
+                    );
+                },
+                30 * 60, // 30分钟（单位：秒）
+                User.class // 目标类型
+        );
         // 2. 校验旧密码（如果修改密码）
         if (StringUtils.isNotBlank(updateRequest.getPassword())) {
             if (!BCrypt.checkpw(
                     updateRequest.getOldPassword(),
-                    user.getPassword()
+                    user.getPasswordHash()
             )) {
                 throw new UserException(ResponseCode.USERNAME_OR_PASSWORD_ERROR);
             }
         }
 
-        // 3. 更新字段（仅更新非空值）
+        // 3. 构建更新对象
+        User newUser = new User();
+        newUser.setUserId(updateRequest.getUserId());
         if (StringUtils.isNotBlank(updateRequest.getUsername())) {
-            user.setUsername(updateRequest.getUsername());
+            newUser.setUsername(updateRequest.getUsername());
         }
         if (StringUtils.isNotBlank(updateRequest.getEmail())) {
-            user.setEmail(updateRequest.getEmail());
+            newUser.setEmail(updateRequest.getEmail());
         }
         if (StringUtils.isNotBlank(updateRequest.getPassword())) {
-            user.setPasswordHash(BCrypt.hashpw(
+            newUser.setPasswordHash(BCrypt.hashpw(
                     updateRequest.getPassword(), BCrypt.gensalt()
             ));
         }
 
         // 4. 执行更新
-        User userTemp = userRepository.save(user);
-        return ApiResponse.success(userMapper.toResponse(userTemp));
+        User updatedUser = userRepository.save(newUser);
+
+        // 5. 更新缓存
+        updateRedisCache(updatedUser);
+
+        return userMapper.toResponse(updatedUser);
     }
 
     @Override
     public UserDTO.UserResponse getUserInfo(Long userId) {
-        log.info("Getting user info for user: {}", userId);
-        // 1. 构建Redis键名（添加命名空间）
-        String key = "user:info:" + userId;
 
-        // 2. 尝试从Redis获取缓存
-        String userJson = (String) redisTemplate.opsForValue().get(key);
-        log.debug("Getting user info from Redis for user: {}", userJson);
-        if (userJson != null) {
-            log.debug("User info cached found for user: {}", userId);
-            return JSON.parseObject(userJson, UserDTO.UserResponse.class);
-        }
-
-        // 3. 数据库查询（抛出自定义异常）
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserException(ResponseCode.USER_NOT_EXIST));
-
-        // 4. 使用统一的DTO转换方式（与项目其他方法一致）
-        UserDTO.UserResponse dto = userMapper.toResponse(user);
-
-        // 5. 缓存30分钟（添加过期时间）
-        redisTemplate.opsForValue().set(key, JSON.toJSONString(dto), 30, TimeUnit.MINUTES);
-
-        return dto;
+        // 调用工具类的通用方法
+        return redisCacheUtil.getFromCacheOrDBWithLock(
+                "user:info",
+                userId,
+                () -> {
+                    // 数据库查询逻辑
+                    return userMapper.toResponse(
+                            userRepository.findById(userId)
+                                    .orElseThrow(() -> new UserException(ResponseCode.USER_NOT_EXIST))
+                    );
+                },
+                30 * 60, // 过期时间（30分钟）
+                UserDTO.UserResponse.class // 目标类型
+        );
     }
 
 
@@ -175,5 +181,14 @@ public class UserServiceImpl implements UserService {
         StpUtil.login(user.getUserId());
         return userMapper.toResponse(user);
     }
+
+    private void updateRedisCache(User user) {
+        String key = "user:info:" + user.getUserId();
+        UserDTO.UserResponse dto = userMapper.toResponse(user);
+        String json = JSON.toJSONString(dto);
+        redisTemplate.opsForValue().set(key, json, 30, TimeUnit.MINUTES);
+    }
+
+
 }
 

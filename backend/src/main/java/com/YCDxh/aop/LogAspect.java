@@ -48,7 +48,7 @@ public class LogAspect {
         //操作方法参数
         Object[] args = joinPoint.getArgs();
 //        String methodParams = Arrays.toString(args);
-        String methodParams = JSON.toJSONString(args);
+        String methodParams = "JSON.toJSONString(args)";
         log.info("方法执行前参数: {}", methodParams);
 
         long begin = System.currentTimeMillis();

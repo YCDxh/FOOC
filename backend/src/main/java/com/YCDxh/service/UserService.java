@@ -17,8 +17,7 @@ public interface UserService {
 
     ApiResponse<UserDTO.UserResponse> getUser(Long userId);
 
-    ApiResponse<UserDTO.UserResponse> updateUser(
-            Long userId, UserDTO.UpdateRequest request)
+    UserDTO.UserResponse updateUser(UserDTO.UpdateRequest request)
             throws UserException;
 
     UserDTO.UserResponse getUserInfo(Long userId);

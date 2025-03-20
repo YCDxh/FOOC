@@ -2,6 +2,9 @@ package com.YCDxh.config;
 
 
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
+import org.redisson.Redisson;
+import org.redisson.api.RedissonClient;
+import org.redisson.config.Config;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
@@ -15,6 +18,14 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 @EnableCaching  // 开启缓存
 @Configuration  // 配置类
 public class RedisConfig extends CachingConfigurerSupport {
+
+    @Bean
+    public RedissonClient redissonClient() {
+        Config config = new Config();
+        // 根据实际Redis配置修改连接参数
+        config.useSingleServer().setAddress("redis://127.0.0.1:6379");
+        return Redisson.create(config);
+    }
 
 
     /**

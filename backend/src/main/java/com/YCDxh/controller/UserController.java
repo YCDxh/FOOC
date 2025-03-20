@@ -86,12 +86,17 @@ public class UserController {
 
     // UserController.java
     @ApiOperation("更新用户信息")
-    @PutMapping("/{userId}")
+    @PutMapping("/update")
     public ApiResponse<UserDTO.UserResponse> updateUser(
-            @PathVariable("userId") Long userId,
             @RequestBody @Valid UserDTO.UpdateRequest updateRequest
     ) {
-        return userService.updateUser(userId, updateRequest);
+        try {
+            UserDTO.UserResponse userResponse = userService.updateUser(updateRequest);
+            return ApiResponse.success(userResponse);
+        } catch (UserException e) {
+            return ApiResponse.fail(e.getCode(), e.getMessage());
+        }
+
     }
 
 
