@@ -38,7 +38,7 @@ public class CourseServiceImpl implements CourseService {
 
 
     @Override
-    public ApiResponse<CourseDTO.CourseResponse> createCourse(CourseDTO.CreateRequest request) {
+    public CourseDTO.CourseResponse createCourse(CourseDTO.CreateRequest request) {
         // 1. 校验DTO对象
         Set<ConstraintViolation<CourseDTO.CreateRequest>> violations = validator.validate(request);
         if (!violations.isEmpty()) {
@@ -58,7 +58,7 @@ public class CourseServiceImpl implements CourseService {
         course.setCoverUrl(request.getCoverUrl());
         Course savedCourse = courseRepository.save(course);
 
-        return ApiResponse.success(courseMapper.toCourseResponse(savedCourse));
+        return courseMapper.toCourseResponse(savedCourse);
     }
 
 

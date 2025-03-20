@@ -6,21 +6,15 @@ import com.YCDxh.exception.UserException;
 import com.YCDxh.mapper.UserMapper;
 import com.YCDxh.model.ApiResponse;
 import com.YCDxh.model.dto.UserDTO;
-import com.YCDxh.model.entity.User;
-import com.YCDxh.model.enums.ResponseCode;
-import com.YCDxh.security.MyUserDetails;
 import com.YCDxh.service.UserService;
 import com.YCDxh.utils.JwtUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 

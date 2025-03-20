@@ -15,10 +15,10 @@ import org.springframework.context.annotation.Configuration;
 public class MinioConfig {
 
 
-    private String endpoint = "http://0.0.0.0:9006";
+    private String endpoint = "http://127.0.0.1:9005";
     private String bucketName = "fooc";
-    private String accessKey = "oRrNvZVcSgps6BOpWQYZ";
-    private String secretKey = "bkIN0gsoP5etPItz63uOS5PztHXPFmLNVcInVytR";
+    private String accessKey = "F1473ZRkXJviQF2W0uaK";
+    private String secretKey = "MoRvps7LrXWu0kMj7OVOlr8H12KNlqlgFRSb9Zxx";
 
     @Bean
     public MinioClient minioClient() {

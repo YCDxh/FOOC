@@ -1,9 +1,11 @@
 package com.YCDxh.controller;
 
+import com.YCDxh.model.ApiResponse;
+import com.YCDxh.model.enums.ResponseCode;
 import com.YCDxh.utils.MinioUtil;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -13,74 +15,67 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/files")
+@Slf4j
 public class FileController {
 
     @Autowired
     private MinioUtil minioUtil;
 
     @PostMapping("/upload")
-    @ApiOperation(value = "上传文件")
-    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
+    @ApiOperation("上传文件")
+    public ApiResponse<String> uploadFile(@RequestParam("file") MultipartFile file) {
+        if (file.isEmpty()) {
+            return ApiResponse.fail(ResponseCode.PARAM_NOT_NULL);
+        }
         try {
-            // 校验文件是否为空
-            if (file.isEmpty()) {
-                return ResponseEntity.badRequest().body("文件不能为空");
-            }
-
-            // 生成唯一文件名并上传
             String objectName = minioUtil.upload(file);
             if (objectName == null) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body("上传失败，请检查 MinIO 连接或文件格式");
+                return ApiResponse.fail(ResponseCode.INTERNAL_SERVER_ERROR);
             }
-
-            return ResponseEntity.ok("文件上传成功，路径: " + objectName);
+            return ApiResponse.success(objectName);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("上传失败: " + e.getMessage());
+            return ApiResponse.error();
         }
     }
 
-    @GetMapping("/download/{fileName}")
-    public ResponseEntity<?> downloadFile(@PathVariable String fileName, HttpServletResponse response) {
+    @GetMapping("/download")
+    @ApiOperation("下载文件")
+    public ApiResponse<Void> downloadFile(@RequestParam String fileName, HttpServletResponse response) {
         try {
             minioUtil.download(fileName, response);
-            return ResponseEntity.ok().build();
+            return ApiResponse.success();
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("文件不存在或下载失败");
+            return ApiResponse.fail(ResponseCode.NOT_FOUND);
         }
     }
 
-    @DeleteMapping("/delete/{fileName}")
-    public ResponseEntity<String> deleteFile(@PathVariable String fileName) {
+    @DeleteMapping("/delete")
+    @ApiOperation("删除文件")
+    public ApiResponse<Void> deleteFile(@RequestParam String fileName) {
         try {
             boolean success = minioUtil.remove(fileName);
             if (success) {
-                return ResponseEntity.ok("文件删除成功");
+                return ApiResponse.success();
             } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body("文件不存在或删除失败");
+                return ApiResponse.fail(ResponseCode.NOT_FOUND);
             }
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("删除失败: " + e.getMessage());
+            return ApiResponse.error();
         }
     }
 
-    @GetMapping("/preview/{fileName}")
-    public ResponseEntity<String> previewFile(@PathVariable String fileName) {
+    @GetMapping("/preview")
+    @ApiOperation("预览文件")
+    public ApiResponse<String> previewFile(@RequestParam String fileName) {
+        log.info("previewFile fileName:{}", fileName);
         try {
             String url = minioUtil.preview(fileName);
-            if (url != null) {
-                return ResponseEntity.ok(url);
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body("文件不存在");
+            if (url == null) {
+                return ApiResponse.fail(ResponseCode.NOT_FOUND);
             }
+            return ApiResponse.success(url);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("预览失败: " + e.getMessage());
+            return ApiResponse.error();
         }
     }
 }

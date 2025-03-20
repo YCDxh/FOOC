@@ -1,6 +1,7 @@
 package com.YCDxh.controller;
 
 
+import com.YCDxh.exception.UserException;
 import com.YCDxh.model.ApiResponse;
 import com.YCDxh.model.dto.CourseDTO;
 import com.YCDxh.repository.ChapterRepository;
@@ -29,10 +30,29 @@ public class CourseController {
     private final LearningProgressRepository learningProgressRepository;
     private final ChapterRepository chapterRepository;
 
+
+    /**
+     * 创建课程
+     *
+     * @param request
+     * @return ApiResponse
+     * @throws UserException
+     * @author YCDxhg
+     * @date 2023/4/16 15:09
+     * <p>
+     * 1. 上传封面文件
+     * 2. 获取文件 URL
+     * 3. 回传 URL至表单
+     * 4. 提交表单
+     */
     @ApiOperation(value = "创建课程")
     @PostMapping("/create")
     public ApiResponse<CourseDTO.CourseResponse> createCourse(CourseDTO.CreateRequest request) {
-        return courseService.createCourse(request);
+        try {
+            return ApiResponse.success(courseService.createCourse(request));
+        } catch (UserException e) {
+            return ApiResponse.fail(e.getCode(), e.getMessage());
+        }
     }
 
     @ApiOperation(value = "根据课程ID获取课程信息")
