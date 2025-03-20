@@ -22,12 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
-import static com.YCDxh.utils.LogUtils.logKeep;
 
 /**
  * @author YCDxhg
@@ -46,6 +41,18 @@ public class UserController {
     public ApiResponse<UserDTO.UserResponse> getUserById(@PathVariable("id") Long userId) {
         return userService.getUser(userId);
     }
+
+    @ApiOperation(value = "通过Redis获取用户信息")
+    @GetMapping("/redis/{id}")
+    public ApiResponse<UserDTO.UserResponse> getUserInfo(@PathVariable("id") Long userId) {
+        try {
+            UserDTO.UserResponse userResponse = userService.getUserInfo(userId);
+            return ApiResponse.success(userResponse);
+        } catch (UserException e) {
+            return ApiResponse.fail(e.getCode(), e.getMessage());
+        }
+    }
+
 
     @ApiOperation(value = "用户登陆")
     @PostMapping("/login")

@@ -4,12 +4,14 @@ spring:
     bucketName: fooc #存储桶名称
     accessKey: oRrNvZVcSgps6BOpWQYZ #访问的key
     secretKey: bkIN0gsoP5etPItz63uOS5PztHXPFmLNVcInVytR #访问的秘钥
+
   datasource:
     url: jdbc:mysql://localhost:3306/simple_mooc?useSSL=false&serverTimezone=UTC
     username: root
     password: root
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource
+
   jpa:
     # 显示sql语句
     show-sql: true

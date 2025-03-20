@@ -10,19 +10,20 @@ import com.YCDxh.model.enums.ResponseCode;
 import com.YCDxh.repository.UserRepository;
 import com.YCDxh.service.CaptchaService;
 import com.YCDxh.service.UserService;
-import com.YCDxh.utils.LogUtils;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sun.text.normalizer.ICUBinary;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 
@@ -37,6 +38,8 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final UserDetailsService userDetailsService;
+    private final RedisTemplate<String, Object> redisTemplate;
+
 
     @Override
     @Transactional(readOnly = true)
@@ -100,6 +103,33 @@ public class UserServiceImpl implements UserService {
         // 4. 执行更新
         User userTemp = userRepository.save(user);
         return ApiResponse.success(userMapper.toResponse(userTemp));
+    }
+
+    @Override
+    public UserDTO.UserResponse getUserInfo(Long userId) {
+        log.info("Getting user info for user: {}", userId);
+        // 1. 构建Redis键名（添加命名空间）
+        String key = "user:info:" + userId;
+
+        // 2. 尝试从Redis获取缓存
+        String userJson = (String) redisTemplate.opsForValue().get(key);
+        log.debug("Getting user info from Redis for user: {}", userJson);
+        if (userJson != null) {
+            log.debug("User info cached found for user: {}", userId);
+            return JSON.parseObject(userJson, UserDTO.UserResponse.class);
+        }
+
+        // 3. 数据库查询（抛出自定义异常）
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(ResponseCode.USER_NOT_EXIST));
+
+        // 4. 使用统一的DTO转换方式（与项目其他方法一致）
+        UserDTO.UserResponse dto = userMapper.toResponse(user);
+
+        // 5. 缓存30分钟（添加过期时间）
+        redisTemplate.opsForValue().set(key, JSON.toJSONString(dto), 30, TimeUnit.MINUTES);
+
+        return dto;
     }
 
 
