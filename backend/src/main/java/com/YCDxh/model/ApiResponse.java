@@ -1,5 +1,6 @@
 package com.YCDxh.model;
 
+import com.YCDxh.exception.UserException;
 import com.YCDxh.model.enums.ResponseCode;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -48,6 +49,10 @@ public class ApiResponse<T> implements Serializable {
 
     public static <T> ApiResponse<T> fail(ResponseCode code) {
         return new ApiResponse<>(code.getCode(), code.getMessage());
+    }
+
+    public static <T> ApiResponse<T> fail(UserException e) {
+        return new ApiResponse<>(e.getCode(), e.getMessage());
     }
 
     public static <T> ApiResponse<T> fail(Integer code, String message) {

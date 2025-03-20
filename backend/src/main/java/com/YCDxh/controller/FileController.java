@@ -2,10 +2,12 @@ package com.YCDxh.controller;
 
 import com.YCDxh.model.ApiResponse;
 import com.YCDxh.model.enums.ResponseCode;
+import com.YCDxh.service.FileService;
 import com.YCDxh.utils.MinioUtil;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,6 +22,8 @@ public class FileController {
 
     @Autowired
     private MinioUtil minioUtil;
+    @Autowired
+    private FileService fileService;
 
     @PostMapping("/upload")
     @ApiOperation("上传文件")
@@ -78,4 +82,28 @@ public class FileController {
             return ApiResponse.error();
         }
     }
+
+    @GetMapping("/compress-and-store")
+    public ApiResponse<String> compressAndStore(@RequestParam String objectName) {
+        String redisKey = "compressed_" + objectName; // 根据业务生成唯一键
+        boolean success = fileService.storeCompressedImageToRedis(objectName, redisKey);
+        if (success) {
+            return ApiResponse.success(redisKey);
+        } else {
+            return ApiResponse.fail(ResponseCode.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/get-from-redis")
+    public ResponseEntity<byte[]> getImageFromRedis(@RequestParam String redisKey) {
+        byte[] imageBytes = fileService.getCompressedImageFromRedis(redisKey);
+        if (imageBytes == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok()
+                .contentType(MediaType.IMAGE_JPEG)
+                .body(imageBytes);
+    }
+
+
 }

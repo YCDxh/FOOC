@@ -7,7 +7,8 @@ import com.YCDxh.model.dto.PagedResult;
 public interface CourseService {
     CourseDTO.CourseResponse createCourse(CourseDTO.CreateRequest request);
 
-    ApiResponse<CourseDTO.CourseResponse> getCourseById(Long courseId);
+    CourseDTO.CourseResponse getCourseById(Long courseId);
+
 
     ApiResponse<PagedResult<CourseDTO.CourseResponse>> searchCoursesByName(
             String courseName,

@@ -51,14 +51,18 @@ public class CourseController {
         try {
             return ApiResponse.success(courseService.createCourse(request));
         } catch (UserException e) {
-            return ApiResponse.fail(e.getCode(), e.getMessage());
+            return ApiResponse.fail(e);
         }
     }
 
     @ApiOperation(value = "根据课程ID获取课程信息")
     @GetMapping("/{courseId}")
     public ApiResponse<CourseDTO.CourseResponse> getCourseById(@PathVariable("courseId") Long courseId) {
-        return courseService.getCourseById(courseId);
+        try {
+            return ApiResponse.success(courseService.getCourseById(courseId));
+        } catch (UserException e) {
+            return ApiResponse.fail(e);
+        }
     }
 
     @GetMapping("/search")
@@ -81,5 +85,6 @@ public class CourseController {
         courseService.deleteCourse(courseId);
         return ApiResponse.success("删除成功");
     }
+
 
 }

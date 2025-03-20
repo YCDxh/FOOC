@@ -8,13 +8,20 @@ import io.minio.http.Method;
 import io.minio.messages.Bucket;
 import io.minio.messages.Item;
 import lombok.extern.slf4j.Slf4j;
+import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -218,5 +225,48 @@ public class MinioUtil {
         }
         return true;
     }
+
+    public byte[] downloadAsBytes(String objectName) {
+        try (InputStream stream = minioClient.getObject(
+                GetObjectArgs.builder()
+                        .bucket(prop.getBucketName()) // 使用配置的BucketName而非硬编码"fooc"
+                        .object(objectName)
+                        .build())) {
+            // 兼容低版本的流读取方式
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            byte[] buffer = new byte[8192];
+            int n;
+            while ((n = stream.read(buffer)) != -1) {
+                byteArrayOutputStream.write(buffer, 0, n);
+            }
+            return byteArrayOutputStream.toByteArray();
+        } catch (Exception e) {
+            log.error("下载图片失败", e);
+            return null;
+        }
+    }
+
+    public byte[] compressImage(String objectName, int targetWidth, int targetHeight) {
+        byte[] originalBytes = downloadAsBytes(objectName);
+        if (originalBytes == null) {
+            log.error("下载图片失败");
+            return null;
+        }
+
+        try (ByteArrayInputStream inputStream = new ByteArrayInputStream(originalBytes)) {
+            BufferedImage image = Thumbnails.of(inputStream)
+                    .size(targetWidth, targetHeight) // 调整尺寸
+                    .outputFormat("jpg")            // 转换为JPEG格式
+                    .asBufferedImage();
+
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            ImageIO.write(image, "jpg", outputStream); // 质量默认为90%
+            return outputStream.toByteArray();
+        } catch (IOException e) {
+            log.error("图片压缩失败", e);
+            return null;
+        }
+    }
+
 
 }

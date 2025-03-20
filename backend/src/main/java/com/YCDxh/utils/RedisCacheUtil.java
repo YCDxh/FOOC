@@ -17,6 +17,24 @@ public class RedisCacheUtil {
     @Autowired
     private RedissonClient redissonClient;
 
+    // 在 RedisCacheUtil 中添加带锁的检查方法：
+    public boolean hasKeyWithLock(String key) {
+        RLock lock = redissonClient.getLock("lock:" + key);
+        try {
+            lock.lock();
+            return redisTemplate.hasKey(key);
+        } finally {
+            lock.unlock();
+        }
+    }
+
+
+    // 在 RedisCacheUtil.java 中添加以下方法：
+    public boolean hasKey(String key) {
+        return redisTemplate.hasKey(key);
+    }
+
+
     public <T> T getFromCacheOrDB(
             String keyPrefix,
             Long dbId,

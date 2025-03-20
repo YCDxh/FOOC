@@ -5,23 +5,33 @@ import com.YCDxh.mapper.CourseMapper;
 import com.YCDxh.model.ApiResponse;
 import com.YCDxh.model.dto.CourseDTO;
 import com.YCDxh.model.dto.PagedResult;
+import com.YCDxh.model.dto.UserDTO;
 import com.YCDxh.model.entity.Course;
 import com.YCDxh.model.enums.ResponseCode;
 import com.YCDxh.repository.CourseRepository;
+import com.YCDxh.service.CourseImageService;
 import com.YCDxh.service.CourseService;
+import com.YCDxh.service.FileService;
+import com.YCDxh.utils.MinioUtil;
+import com.YCDxh.utils.RedisCacheUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Validator;
+import java.io.IOException;
+import java.util.Base64;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -35,6 +45,10 @@ public class CourseServiceImpl implements CourseService {
     private final CourseRepository courseRepository;
     private final CourseMapper courseMapper;
     private final Validator validator;
+    private final MinioUtil minioUtil;
+    private final RedisCacheUtil redisCacheUtil;
+    private final FileService fileService;
+    private CourseImageService courseImageService;
 
 
     @Override
@@ -61,18 +75,26 @@ public class CourseServiceImpl implements CourseService {
         return courseMapper.toCourseResponse(savedCourse);
     }
 
-
     @Override
-    public ApiResponse<CourseDTO.CourseResponse> getCourseById(Long courseId) {
+    public CourseDTO.CourseResponse getCourseById(Long courseId) {
         if (courseId == null) {
             throw new UserException(ResponseCode.PARAM_ERROR);
         }
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new UserException(ResponseCode.COURSE_NOT_EXIST));
-        if (course == null) {
-            throw new UserException(ResponseCode.COURSE_NOT_EXIST);
+
+        String redisKey = "compressed_" + course.getCoverUrl(); // 根据业务生成唯一键
+
+        // 新增：检查 Redis 中是否存在该键
+        if (!redisCacheUtil.hasKey(redisKey)) {
+            boolean success = fileService.storeCompressedImageToRedis(course.getCoverUrl(), redisKey);
+            if (!success) {
+                log.error("Failed to store compressed image in Redis redisKey:{}, Url:{}", redisKey, course.getCoverUrl());
+            }
         }
-        return ApiResponse.success(courseMapper.toCourseResponse(course));
+
+
+        return courseMapper.toCourseResponse(course);
     }
 
     @Override
