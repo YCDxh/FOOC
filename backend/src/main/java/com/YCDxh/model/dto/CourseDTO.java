@@ -29,7 +29,6 @@ public class CourseDTO {
         private String category;
 
         @NotBlank(message = "封面图片URL不能为空")
-        @URL(message = "封面图片URL格式不正确")
         private String coverUrl;
     }
 

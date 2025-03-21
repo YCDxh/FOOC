@@ -7,8 +7,10 @@ import com.YCDxh.model.dto.CourseDTO;
 import com.YCDxh.model.dto.PagedResult;
 import com.YCDxh.model.dto.UserDTO;
 import com.YCDxh.model.entity.Course;
+import com.YCDxh.model.entity.User;
 import com.YCDxh.model.enums.ResponseCode;
 import com.YCDxh.repository.CourseRepository;
+import com.YCDxh.repository.UserRepository;
 import com.YCDxh.service.CourseImageService;
 import com.YCDxh.service.CourseService;
 import com.YCDxh.service.FileService;
@@ -48,7 +50,7 @@ public class CourseServiceImpl implements CourseService {
     private final MinioUtil minioUtil;
     private final RedisCacheUtil redisCacheUtil;
     private final FileService fileService;
-    private CourseImageService courseImageService;
+    private final UserRepository userRepository;
 
 
     @Override
@@ -70,6 +72,9 @@ public class CourseServiceImpl implements CourseService {
         course.setDescription(request.getDescription());
         course.setCategory(request.getCategory());
         course.setCoverUrl(request.getCoverUrl());
+
+        User teacher = userRepository.findByUserId(1L);
+        course.setTeacher(teacher);
         Course savedCourse = courseRepository.save(course);
 
         return courseMapper.toCourseResponse(savedCourse);
@@ -90,6 +95,8 @@ public class CourseServiceImpl implements CourseService {
             boolean success = fileService.storeCompressedImageToRedis(course.getCoverUrl(), redisKey);
             if (!success) {
                 log.error("Failed to store compressed image in Redis redisKey:{}, Url:{}", redisKey, course.getCoverUrl());
+            } else {
+
             }
         }
 

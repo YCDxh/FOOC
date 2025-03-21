@@ -12,7 +12,8 @@ import java.util.concurrent.TimeUnit;
 public class FileService {
 
     private final MinioUtil minioUtil;
-    private final RedisTemplate<String, byte[]> redisTemplate;
+
+    private final RedisTemplate<String, byte[]> fileRedisTemplate;
 
     public boolean storeCompressedImageToRedis(String objectName, String redisKey) {
         byte[] compressedBytes = minioUtil.compressImage(objectName, 800, 600);
@@ -21,11 +22,11 @@ public class FileService {
         }
 
         // 存入Redis并设置过期时间（例如1小时）
-        redisTemplate.opsForValue().set(redisKey, compressedBytes, 1, TimeUnit.HOURS);
+        fileRedisTemplate.opsForValue().set(redisKey, compressedBytes, 1, TimeUnit.HOURS);
         return true;
     }
 
     public byte[] getCompressedImageFromRedis(String redisKey) {
-        return redisTemplate.opsForValue().get(redisKey);
+        return fileRedisTemplate.opsForValue().get(redisKey);
     }
 }

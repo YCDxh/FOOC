@@ -254,13 +254,14 @@ public class MinioUtil {
         }
 
         try (ByteArrayInputStream inputStream = new ByteArrayInputStream(originalBytes)) {
-            BufferedImage image = Thumbnails.of(inputStream)
-                    .size(targetWidth, targetHeight) // 调整尺寸
-                    .outputFormat("jpg")            // 转换为JPEG格式
-                    .asBufferedImage();
-
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            ImageIO.write(image, "jpg", outputStream); // 质量默认为90%
+
+            Thumbnails.of(inputStream)
+                    .size(targetWidth, targetHeight)
+                    .outputQuality(0.9f)  // 设置压缩质量
+                    .outputFormat("jpg")
+                    .toOutputStream(outputStream);  // 直接输出
+
             return outputStream.toByteArray();
         } catch (IOException e) {
             log.error("图片压缩失败", e);
