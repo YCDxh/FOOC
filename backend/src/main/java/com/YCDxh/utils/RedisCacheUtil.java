@@ -5,6 +5,7 @@ import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -83,4 +84,22 @@ public class RedisCacheUtil {
             lock.unlock();
         }
     }
+
+    // 在RedisCacheUtil.java中添加以下方法（假设使用Redis的BF命令）
+
+    // 在 RedisCacheUtil.java 中添加布隆过滤器相关方法
+
+    private final MyBloomFilter bloomFilter = new MyBloomFilter();
+
+    // 注册时添加用户到布隆过滤器
+    public void addBloomFilter(String value) {
+        bloomFilter.add(value);
+    }
+
+    // 登录/查询时检查布隆过滤器
+    public boolean checkBloomFilter(String value) {
+        return bloomFilter.mightContain(value);
+    }
+
+
 }

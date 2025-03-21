@@ -10,6 +10,7 @@ import com.YCDxh.model.enums.ResponseCode;
 import com.YCDxh.repository.UserRepository;
 import com.YCDxh.service.CaptchaService;
 import com.YCDxh.service.UserService;
+import com.YCDxh.utils.MyBloomFilter;
 import com.YCDxh.utils.RedisCacheUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
@@ -60,12 +61,15 @@ public class UserServiceImpl implements UserService {
         if (userId == null) {
             throw new UserException(ResponseCode.PARAM_ERROR);
         }
-        return ApiResponse.success(
-                userRepository.findById(userId)
-                        .map(userMapper::toResponse)
-                        .orElseThrow(() -> new UserException(
-                                ResponseCode.USER_NOT_EXIST.getCode(),
-                                String.format("User with ID %d not found", userId))));
+
+        UserDTO.UserResponse userResponse = userRepository.findById(userId)
+                .map(userMapper::toResponse)
+                .orElseThrow(() -> new UserException(
+                        ResponseCode.USER_NOT_EXIST.getCode(),
+                        String.format("User with ID %d not found", userId)));
+        // 3. 测试接口后将用户名存入布隆过滤器
+        redisCacheUtil.addBloomFilter(userResponse.getUsername());
+        return ApiResponse.success(userResponse);
     }
 
     // UserServiceImpl.java
@@ -124,6 +128,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO.UserResponse getUserInfo(Long userId) {
 
+        MyBloomFilter bloomFilter = new MyBloomFilter();
+
+
         // 调用工具类的通用方法
         return redisCacheUtil.getFromCacheOrDBWithLock(
                 "user:info",
@@ -145,6 +152,11 @@ public class UserServiceImpl implements UserService {
     public UserDTO.UserResponse register(UserDTO.RegisterRequest request
             , HttpServletRequest httpRequest) {
 
+        // 1. 先检查布隆过滤器（预检）
+        if (redisCacheUtil.checkBloomFilter(request.getUsername())) {
+            throw new UserException(2077, "布隆过滤器校验username未通过");
+        }
+
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new UserException(ResponseCode.EMAIL_OCCUPIED);
         }
@@ -162,6 +174,8 @@ public class UserServiceImpl implements UserService {
         User userTemp = userRepository.save(user);
 
         StpUtil.login(userTemp.getUserId());
+        // 3. 注册成功后将用户名存入布隆过滤器
+        redisCacheUtil.addBloomFilter(request.getUsername());
         return userMapper.toResponse(userTemp);
     }
 
