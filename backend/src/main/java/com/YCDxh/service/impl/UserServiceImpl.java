@@ -128,8 +128,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO.UserResponse getUserInfo(Long userId) {
 
-        MyBloomFilter bloomFilter = new MyBloomFilter();
-
 
         // 调用工具类的通用方法
         return redisCacheUtil.getFromCacheOrDBWithLock(

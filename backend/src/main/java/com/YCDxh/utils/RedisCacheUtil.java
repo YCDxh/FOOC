@@ -89,16 +89,18 @@ public class RedisCacheUtil {
 
     // 在 RedisCacheUtil.java 中添加布隆过滤器相关方法
 
-    private final MyBloomFilter bloomFilter = new MyBloomFilter();
 
-    // 注册时添加用户到布隆过滤器
+    // 在 RedisCacheUtil.java 中：
     public void addBloomFilter(String value) {
-        bloomFilter.add(value);
+        redisTemplate.opsForSet().add("usernames_set", value);
     }
 
-    // 登录/查询时检查布隆过滤器
     public boolean checkBloomFilter(String value) {
-        return bloomFilter.mightContain(value);
+        return Boolean.TRUE.equals(redisTemplate.opsForSet().isMember("usernames_set", value));
+    }
+
+    public void removeBloomFilter(String value) {
+        redisTemplate.opsForSet().remove("usernames_set", value);
     }
 
 
