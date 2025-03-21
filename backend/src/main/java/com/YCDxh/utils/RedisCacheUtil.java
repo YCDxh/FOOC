@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -12,6 +13,7 @@ import java.util.function.Supplier;
 
 @Component
 public class RedisCacheUtil {
+    @Qualifier("redisTemplate")
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
     @Autowired
