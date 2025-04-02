@@ -189,6 +189,13 @@
             <version>3.0.2</version> <!-- 升级到较新版本 -->
         </dependency>
 
+        <!-- 在pom.xml的<dependencies>中添加 -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>easyexcel</artifactId>
+            <version>3.3.2</version>
+        </dependency>
+
 
         <!-- 其他 -->
         <dependency>
