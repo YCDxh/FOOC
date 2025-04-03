@@ -17,7 +17,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
+import java.io.IOException;
+import java.time.LocalDate;
 
 
 /**
@@ -37,4 +40,18 @@ public class ExcelController {
         return ApiResponse.success();
     }
 
+    @PostMapping("/export")
+    @ApiOperation(value = "导出excel数据")
+    public void exportData(HttpServletResponse response, @RequestParam String startDate, @RequestParam String endDate) throws IOException {
+        // 设置响应头
+        response.setContentType("application/octet-stream");
+        response.setHeader("Content-Disposition", "attachment; filename=attendance.xlsx");
+
+        // 调用导出方法
+        excelService.exportData(
+                response.getOutputStream(),
+                LocalDate.parse(startDate),
+                LocalDate.parse(endDate)
+        );
+    }
 }

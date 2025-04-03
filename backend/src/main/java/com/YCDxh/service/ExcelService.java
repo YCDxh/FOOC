@@ -1,20 +1,31 @@
 package com.YCDxh.service;
 
+import com.YCDxh.model.dto.ExportRecordDTO;
 import com.YCDxh.model.entity.AfterRecord;
 import com.YCDxh.model.entity.OriginalRecord;
 import com.YCDxh.repository.RecordRepository;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.context.AnalysisContext;
+import com.alibaba.excel.converters.Converter;
+import com.alibaba.excel.metadata.data.CellData;
 import com.alibaba.excel.read.listener.ReadListener;
+import com.alibaba.excel.write.metadata.WriteSheet;
+import jodd.typeconverter.impl.LocalDateConverter;
+import jodd.typeconverter.impl.LocalTimeConverter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.exception.spi.ConversionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.OutputStream;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author YCDxhg
@@ -38,8 +49,6 @@ public class ExcelService {
                 AfterRecord afterRecord = new AfterRecord();
                 LocalDate localDate = null;
                 LocalTime localTime = null;
-
-                LocalDate lastLocalDate = null;
                 LocalTime lastLocalTime = null;
                 int flag = 1;
 
@@ -47,6 +56,7 @@ public class ExcelService {
                 public void invoke(OriginalRecord originalRecord, AnalysisContext context) {
 
 
+                    // 数据库时间字段为字符串, 需修改为起始时间 和 结束时间 两个字段
                     if (flag == 1) {
                         localTime = originalRecord.getCheckTime().toLocalTime();
                         localDate = originalRecord.getCheckTime().toLocalDate();
@@ -61,7 +71,8 @@ public class ExcelService {
                         afterRecord.setEmployeeId(originalRecord.getId().substring(1));
                         flag = 0;
                     } else if (!localDate.isEqual(originalRecord.getCheckTime().toLocalDate())) {
-                        afterRecord.setCheckTime(localTime + "-" + lastLocalTime);
+                        afterRecord.setStartTime(localTime);
+                        afterRecord.setEndTime(lastLocalTime);
                         afterRecord.setWorkDuration(String.valueOf(Duration.between(localTime, lastLocalTime).toHours()));
                         save(afterRecord);
                         afterRecord = new AfterRecord();
@@ -94,6 +105,29 @@ public class ExcelService {
     }
 
 
+    public void exportData(OutputStream outputStream, LocalDate startDate, LocalDate endDate) {
+        List<AfterRecord> records = recordRepository.findAllByWorkDateBetween(startDate, endDate);
+
+        // 转换数据为导出DTO
+        List<ExportRecordDTO> exportRecords = records.stream()
+                .map(record -> new ExportRecordDTO(
+                        record.getEmployeeId(),
+                        record.getEmployeeName(),
+                        record.getDepartment(),
+                        record.getWorkDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+                        record.getStartTime().format(DateTimeFormatter.ofPattern("HH:mm")),
+                        record.getEndTime().format(DateTimeFormatter.ofPattern("HH:mm")),
+                        Integer.parseInt(record.getWorkDuration())
+                ))
+                .collect(Collectors.toList());
+
+        // 使用EasyExcel导出
+        EasyExcel.write(outputStream, ExportRecordDTO.class)
+                .sheet("出勤统计表")
+                .doWrite(exportRecords);
+    }
+
+
     private void save(AfterRecord newRecord) {
         // 通过唯一键查询现有记录
         AfterRecord existingRecord = recordRepository.findByEmployeeIdAndWorkDate(
@@ -103,9 +137,11 @@ public class ExcelService {
 
         if (existingRecord != null) {
             // 更新现有记录的字段（保留需要覆盖的字段）
-            existingRecord.setCheckTime(newRecord.getCheckTime());
-            existingRecord.setWorkDuration(newRecord.getWorkDuration());
-            // 其他需要更新的字段...
+            existingRecord.setStartTime(newRecord.getStartTime());
+            existingRecord.setEndTime(newRecord.getEndTime());
+            existingRecord.setWorkDuration(String.valueOf(
+                    Duration.between(existingRecord.getStartTime(), existingRecord.getEndTime()).toHours()));
+
 
             // 使用现有记录对象触发更新（关键！）
             recordRepository.save(existingRecord);

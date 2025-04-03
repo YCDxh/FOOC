@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 /**
  * @author YCDxhg
@@ -33,9 +34,24 @@ public class AfterRecord {
     @Column(name = "work_date", nullable = false)
     private LocalDate workDate;
 
-    @Column(name = "check_time")
-    private String checkTime;
+
+    @Column(name = "start_time", nullable = false)
+    private LocalTime startTime;  // 起始时间
+    @Column(name = "end_time", nullable = false)
+    private LocalTime endTime;    // 结束时间
 
     @Column(name = "work_duration")
     private String workDuration;
+
+    public AfterRecord(String employeeId, String employeeName, String department, LocalDate workDate, LocalTime startTime, LocalTime endTime, String workDuration) {
+        this.employeeId = employeeId;
+        this.employeeName = employeeName;
+        this.department = department;
+        this.workDate = workDate;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.workDuration = workDuration;
+    }
+
+
 }
