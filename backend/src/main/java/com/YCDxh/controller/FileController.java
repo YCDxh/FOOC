@@ -84,6 +84,7 @@ public class FileController {
     }
 
     @GetMapping("/compress-and-store")
+    @ApiOperation("压缩图片并保存到Redis")
     public ApiResponse<String> compressAndStore(@RequestParam String objectName) {
         String redisKey = "compressed_" + objectName; // 根据业务生成唯一键
         boolean success = fileService.storeCompressedImageToRedis(objectName, redisKey);
@@ -95,6 +96,7 @@ public class FileController {
     }
 
     @GetMapping("/get-from-redis")
+    @ApiOperation("从Redis中获取压缩后的图片")
     public ResponseEntity<byte[]> getImageFromRedis(@RequestParam String redisKey) {
         byte[] imageBytes = fileService.getCompressedImageFromRedis(redisKey);
         if (imageBytes == null) {
