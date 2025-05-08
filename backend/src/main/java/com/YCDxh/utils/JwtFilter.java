@@ -1,7 +1,6 @@
 package com.YCDxh.utils;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.Filter;
@@ -21,7 +20,7 @@ public class JwtFilter extends OncePerRequestFilter implements Filter {
                                     HttpServletResponse response,
                                     FilterChain chain) throws ServletException, IOException {
         String token = request.getHeader("Authorization");
-        if (token == null || JwtUtils.getUsernameFromToken(token) != null) {
+        if (token == null || JwtUtil.getUsernameFromToken(token) != null) {
 //            response.sendRedirect("http://localhost:8080/user/login");
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
         }

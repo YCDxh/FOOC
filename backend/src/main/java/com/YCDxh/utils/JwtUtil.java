@@ -3,11 +3,7 @@ package com.YCDxh.utils;
 import com.YCDxh.security.MyUserDetails;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
 import java.util.Base64;
@@ -20,7 +16,7 @@ import java.util.function.Function;
  * @author YCDxhg
  */
 
-public class JwtUtils {
+public class JwtUtil {
 
 
     private static String secretKeyString = "gUM+BALaPCW3O1VDxasOL26CNITirSV11zoWFeqT1mqfp9VuX3tFX2J60nGZDslIdKHfNUHPMJuR+PJZ+B3M2w=="; // 从配置文件读取 Base64 编码的秘钥

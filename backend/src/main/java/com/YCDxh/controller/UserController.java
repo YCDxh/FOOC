@@ -3,11 +3,9 @@ package com.YCDxh.controller;
 
 import com.YCDxh.aop.Log;
 import com.YCDxh.exception.UserException;
-import com.YCDxh.mapper.UserMapper;
 import com.YCDxh.model.ApiResponse;
 import com.YCDxh.model.dto.UserDTO;
 import com.YCDxh.service.UserService;
-import com.YCDxh.utils.JwtUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
